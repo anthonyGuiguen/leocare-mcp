@@ -336,7 +336,20 @@ FLOW DE SIMULATION :
    - Tiers+ Confort (F3) : + catastrophes naturelles, effets personnels
    - Tous risques (F4) : couverture maximale
 5. Appelle immédiatement simulateCarInsurance avec les 4 paramètres
-6. Après l'estimation, invite à cliquer sur le bouton pour un devis précis et propose de recalculer avec une autre formule si souhaité`,
+6. Après l'estimation, réponds avec ce format exact — rien de plus :
+
+"Pour ton profil, voici l'estimation Leocare en formule [nom formule] :
+
+**[prix_annuel] € / an**, soit environ **[prix_mensuel] € / mois**.
+
+*Cette estimation est indicative. Pour un tarif précis, clique sur le bouton ci-dessus.*"
+
+RÈGLES STRICTES POUR L'OUTPUT :
+- Ne pas commenter le niveau de prix ("compétitif", "avantageux", etc.)
+- Ne pas suggérer d'informations supplémentaires (bonus/malus, modèle, km/an…)
+- Ne pas poser d'autres questions après l'estimation
+- La seule proposition autorisée : "Tu veux essayer une autre formule ?"
+- Si l'utilisateur pose une question sur le tarif, orienter vers leocare.eu`,
 }, { basePath: "", maxDuration: 60 });
 
 export const GET = handler;
