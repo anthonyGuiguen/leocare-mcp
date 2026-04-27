@@ -180,8 +180,16 @@ const handler = createMcpHandler(async (server) => {
       _meta: {
         "openai/widgetDescription": "Carte de tarification assurance auto Leocare",
         "openai/widgetPrefersBorder": false,
-        "openai/widgetDomain": "leocare-mcp.vercel.app",
-        "openai/widgetContentSecurityPolicy": "default-src 'none'; style-src 'unsafe-inline' https://fonts.googleapis.com https://api.fontshare.com; font-src https://fonts.gstatic.com https://api.fontshare.com; script-src 'unsafe-inline'; img-src data:;",
+        ui: {
+          domain: "https://leocare-mcp.vercel.app",
+          csp: {
+            resourceDomains: [
+              "https://fonts.googleapis.com",
+              "https://fonts.gstatic.com",
+              "https://api.fontshare.com",
+            ],
+          },
+        },
       },
     },
     async (uri) => ({
@@ -193,8 +201,16 @@ const handler = createMcpHandler(async (server) => {
           _meta: {
             "openai/widgetDescription": "Carte de tarification assurance auto Leocare",
             "openai/widgetPrefersBorder": false,
-            "openai/widgetDomain": "leocare-mcp.vercel.app",
-            "openai/widgetContentSecurityPolicy": "default-src 'none'; style-src 'unsafe-inline' https://fonts.googleapis.com https://api.fontshare.com; font-src https://fonts.gstatic.com https://api.fontshare.com; script-src 'unsafe-inline'; img-src data:;",
+            ui: {
+              domain: "https://leocare-mcp.vercel.app",
+              csp: {
+                resourceDomains: [
+                  "https://fonts.googleapis.com",
+                  "https://fonts.gstatic.com",
+                  "https://api.fontshare.com",
+                ],
+              },
+            },
           },
         },
       ],
