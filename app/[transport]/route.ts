@@ -254,6 +254,10 @@ FORMULES :
         prix_mensuel: z.number().describe("Prix mensuel TTC en euros"),
         prix_annuel:  z.number().describe("Prix annuel TTC en euros"),
       }) as any,
+      annotations: {
+        readOnlyHint: true,
+        openWorldHint: false,
+      },
       _meta: {
         "openai/outputTemplate": WIDGET_URI,
         "openai/toolInvocation/invoking": "Calcul du tarif en cours…",
