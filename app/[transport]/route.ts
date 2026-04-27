@@ -21,18 +21,19 @@ function buildWidgetHtml(): string {
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
+  html{background:#6F43D6}
   body{font-family:'Satoshi',sans-serif;background:linear-gradient(160deg,#6F43D6 0%,#8B6BE0 100%);display:flex;flex-direction:column;align-items:center;padding:28px 16px 32px;min-height:100vh;width:100%}
   .loading{text-align:center;color:#888;padding:48px 0;font-size:14px}
-  .tagline{font-family:'Paytone One',sans-serif;font-size:20px;color:#fff;text-align:center;margin-bottom:20px;max-width:400px;width:100%;padding:0 8px}
-  .card{background:#fff;border-radius:24px;padding:28px 24px 24px;width:100%;max-width:400px;color:#2E374D;box-shadow:0 8px 32px rgba(0,0,0,.18)}
+  .tagline{font-family:'Paytone One',sans-serif;font-size:20px;color:#fff;text-align:center;margin-bottom:12px;max-width:400px;width:100%;padding:0 8px}
+  .card{background:#fff;border-radius:24px;padding:20px;width:100%;max-width:400px;color:#2E374D;box-shadow:0 8px 32px rgba(0,0,0,.18)}
   .card-header{position:relative;display:flex;align-items:center;justify-content:center;margin-bottom:18px}
   .card-icon{position:absolute;left:0;width:40px;height:40px;border-radius:50%;overflow:hidden;padding:2px;background:#6F43D5}
   .card-title{font-family:'Paytone One',sans-serif;font-size:24px;color:#2E374D;text-align:center}
-  .price-block{text-align:center;padding-bottom:22px;margin-bottom:22px}
+  .price-block{text-align:center;padding-bottom:8px;margin-bottom:8px}
   .price-main{font-family:'Satoshi',sans-serif;font-size:20px;font-weight:900;color:#6F43D6;line-height:1}
   .price-main .unit{font-family:'Satoshi',sans-serif;font-size:16px;font-weight:500;color:#2E374D;margin-left:2px}
   .price-annual{font-family:'Satoshi',sans-serif;font-size:12px;font-weight:500;color:#58627C;margin-top:8px}
-  .recap-title{font-family:'Satoshi',sans-serif;font-size:18px;font-weight:900;color:#2E374D;margin-bottom:12px}
+  .recap-title{font-family:'Satoshi',sans-serif;font-size:18px;font-weight:900;color:#2E374D;margin-bottom:8px}
   .recap-subcard{border:1px solid #E8E8EF;border-radius:16px;padding:0 16px;margin-bottom:24px}
   .recap-row{display:flex;align-items:flex-start;gap:14px;padding:14px 0;border-bottom:1px solid #F0F0F5}
   .recap-row:last-child{border-bottom:none}
