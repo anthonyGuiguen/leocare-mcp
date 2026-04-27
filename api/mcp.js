@@ -1,16 +1,9 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { z } from "zod";
+import { simulateTarif } from "./coherent.js";
 
 const WIDGET_URI = "ui://leocare/quote.html";
-const PROXY_URL = "https://project-09th3.vercel.app/api/simulate";
-
-const FORMULE_MAP = {
-  F1: "Tiers",
-  F2: "Tiers+",
-  F3: "Tiers+ Confort",
-  F4: "Tous risques",
-};
 
 function createServer() {
   const server = new McpServer(
@@ -55,11 +48,7 @@ function createServer() {
       },
     },
     async ({ date_naissance, date_permis, date_mec, numero_formule }) => {
-      const result = await fetch(PROXY_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ date_naissance, date_permis, date_mec, numero_formule }),
-      }).then((r) => r.json());
+      const result = await simulateTarif({ date_naissance, date_permis, date_mec, numero_formule });
 
       if (!result.eligible) {
         return {
