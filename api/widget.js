@@ -1,6 +1,9 @@
 export default function handler(req, res) {
   res.setHeader("Content-Type", "text/html; charset=utf-8");
   res.setHeader("Access-Control-Allow-Origin", "*");
+  // Autoriser l'embedding en iframe (requis par ChatGPT Apps)
+  res.setHeader("X-Frame-Options", "ALLOWALL");
+  res.setHeader("Content-Security-Policy", "frame-ancestors *");
   res.send(`<!DOCTYPE html>
 <html lang="fr">
 <head>
