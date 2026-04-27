@@ -89,7 +89,7 @@ const handler = createMcpHandler(async (server) => {
       };
     }
   );
-}, {}, { basePath: "/mcp", maxDuration: 60 });
+}, {}, { basePath: "", maxDuration: 60 });
 
 export const GET = handler;
 export const POST = handler;
