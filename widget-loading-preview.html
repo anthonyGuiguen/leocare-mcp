@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Loading Preview — Leocare</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Paytone+One&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { background: #6F43D6; }
+  body {
+    font-family: 'Satoshi', sans-serif;
+    background: linear-gradient(160deg, #6F43D6 0%, #8B6BE0 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 28px 16px 32px;
+    min-height: 100vh;
+    width: 100%;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 24px;
+    padding: 20px;
+    width: 100%;
+    max-width: 400px;
+    color: #2E374D;
+    box-shadow: 0 8px 32px rgba(0,0,0,.18);
+  }
+
+  /* ── Loading skeleton ── */
+  .loading-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 0 8px;
+    gap: 20px;
+  }
+
+  /* Logo + titre */
+  .skel-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+  }
+  .skel-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .skel-title {
+    height: 24px;
+    border-radius: 8px;
+    width: 55%;
+  }
+
+  /* Prix */
+  .skel-price-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+  }
+  .skel-price {
+    height: 28px;
+    border-radius: 8px;
+    width: 50%;
+  }
+  .skel-annual {
+    height: 14px;
+    border-radius: 6px;
+    width: 65%;
+  }
+
+  /* Profil */
+  .skel-section-title {
+    height: 20px;
+    border-radius: 8px;
+    width: 35%;
+    align-self: flex-start;
+  }
+  .skel-subcard {
+    border: 1px solid #E8E8EF;
+    border-radius: 16px;
+    padding: 0 16px;
+    width: 100%;
+  }
+  .skel-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid #F0F0F5;
+  }
+  .skel-row:last-child { border-bottom: none; }
+  .skel-icon {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+  .skel-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+  }
+  .skel-line-label {
+    height: 12px;
+    border-radius: 5px;
+    width: 55%;
+  }
+  .skel-line-value {
+    height: 16px;
+    border-radius: 5px;
+    width: 40%;
+  }
+
+  /* CTA */
+  .skel-cta {
+    height: 52px;
+    border-radius: 50px;
+    width: 100%;
+  }
+
+  /* Animation shimmer */
+  @keyframes shimmer {
+    0%   { background-position: -400px 0; }
+    100% { background-position: 400px 0; }
+  }
+  .skel-circle,
+  .skel-title,
+  .skel-price,
+  .skel-annual,
+  .skel-section-title,
+  .skel-icon,
+  .skel-line-label,
+  .skel-line-value,
+  .skel-cta {
+    background: linear-gradient(90deg, #F0F0F5 25%, #E4E4EC 50%, #F0F0F5 75%);
+    background-size: 800px 100%;
+    animation: shimmer 1.5s infinite linear;
+  }
+</style>
+</head>
+<body>
+<div style="font-family:'Paytone One',sans-serif;font-size:20px;color:#fff;text-align:center;margin-bottom:12px;max-width:400px;width:100%;padding:0 8px;">
+  Votre bolide assuré à partir de…
+</div>
+<div class="card">
+  <div class="loading-inner">
+
+    <!-- Header skeleton -->
+    <div class="skel-header">
+      <div class="skel-circle"></div>
+      <div class="skel-title"></div>
+    </div>
+
+    <!-- Prix skeleton -->
+    <div class="skel-price-wrap">
+      <div class="skel-price"></div>
+      <div class="skel-annual"></div>
+    </div>
+
+    <!-- Profil skeleton -->
+    <div class="skel-section-title"></div>
+    <div class="skel-subcard">
+      <div class="skel-row">
+        <div class="skel-icon"></div>
+        <div class="skel-lines">
+          <div class="skel-line-label"></div>
+          <div class="skel-line-value"></div>
+        </div>
+      </div>
+      <div class="skel-row">
+        <div class="skel-icon"></div>
+        <div class="skel-lines">
+          <div class="skel-line-label"></div>
+          <div class="skel-line-value"></div>
+        </div>
+      </div>
+      <div class="skel-row">
+        <div class="skel-icon"></div>
+        <div class="skel-lines">
+          <div class="skel-line-label"></div>
+          <div class="skel-line-value"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA skeleton -->
+    <div class="skel-cta"></div>
+
+  </div>
+</div>
+</body>
+</html>

@@ -23,7 +23,6 @@ function buildWidgetHtml(): string {
   html,body{height:100%}
   html{background:#6F43D6}
   body{font-family:'Satoshi',sans-serif;background:linear-gradient(160deg,#6F43D6 0%,#8B6BE0 100%);display:flex;flex-direction:column;align-items:center;padding:28px 16px 32px;min-height:100vh;width:100%}
-  .loading{text-align:center;color:#888;padding:48px 0;font-size:14px}
   .tagline{font-family:'Paytone One',sans-serif;font-size:20px;color:#fff;text-align:center;margin-bottom:12px;max-width:400px;width:100%;padding:0 8px}
   .card{background:#fff;border-radius:24px;padding:20px;width:100%;max-width:400px;color:#2E374D;box-shadow:0 8px 32px rgba(0,0,0,.18)}
   .card-header{position:relative;display:flex;align-items:center;justify-content:center;margin-bottom:18px}
@@ -44,12 +43,36 @@ function buildWidgetHtml(): string {
   .cta:hover{opacity:.88}
   .legal{font-family:'Satoshi',sans-serif;font-size:10px;color:#58627C;margin-top:14px;line-height:1.6;text-align:center}
   .legal a{color:#6F43D6;text-decoration:underline}
+  /* Skeleton */
+  @keyframes shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}
+  .sk{background:linear-gradient(90deg,#F0F0F5 25%,#E4E4EC 50%,#F0F0F5 75%);background-size:800px 100%;animation:shimmer 1.5s infinite linear;border-radius:6px}
+  .sk-circle{width:40px;height:40px;border-radius:50%}
+  .sk-title{height:24px;width:55%}
+  .sk-price{height:28px;width:50%}
+  .sk-annual{height:14px;width:65%}
+  .sk-section{height:20px;width:35%}
+  .sk-icon{width:14px;height:14px}
+  .sk-label{height:12px;width:55%}
+  .sk-value{height:16px;width:40%}
+  .sk-cta{height:52px;width:100%;border-radius:50px}
 </style>
 </head>
 <body>
 <div class="tagline">Votre bolide assuré à partir de...</div>
 <div class="card">
-  <div class="loading" id="loading">Chargement de votre estimation…</div>
+  <div id="loading">
+    <div style="display:flex;flex-direction:column;align-items:center;padding:12px 0 8px;gap:20px">
+      <div style="display:flex;align-items:center;gap:12px;width:100%"><div class="sk sk-circle"></div><div class="sk sk-title"></div></div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px;width:100%"><div class="sk sk-price"></div><div class="sk sk-annual"></div></div>
+      <div class="sk sk-section" style="align-self:flex-start"></div>
+      <div style="border:1px solid #E8E8EF;border-radius:16px;padding:0 16px;width:100%">
+        <div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid #F0F0F5"><div class="sk sk-icon"></div><div style="display:flex;flex-direction:column;gap:6px;flex:1"><div class="sk sk-label"></div><div class="sk sk-value"></div></div></div>
+        <div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid #F0F0F5"><div class="sk sk-icon"></div><div style="display:flex;flex-direction:column;gap:6px;flex:1"><div class="sk sk-label"></div><div class="sk sk-value"></div></div></div>
+        <div style="display:flex;align-items:center;gap:14px;padding:14px 0"><div class="sk sk-icon"></div><div style="display:flex;flex-direction:column;gap:6px;flex:1"><div class="sk sk-label"></div><div class="sk sk-value"></div></div></div>
+      </div>
+      <div class="sk sk-cta"></div>
+    </div>
+  </div>
   <div id="content" style="display:none">
 
     <div class="card-header">
