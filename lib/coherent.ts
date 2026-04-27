@@ -109,7 +109,13 @@ export async function simulateTarif(params: {
   }
 
   const prixAnnuel: number | null = outputs.TTC_final_si_etat_OK ?? outputs.TTC_final ?? null;
-  const prixMensuel = prixAnnuel !== null ? Math.round((prixAnnuel / 12) * 100) / 100 : null;
+  const htFinal: number | null = outputs.HT_final ?? null;
+
+  // Prime mensuelle = (TTC_final / 12) + frais FCA (13% du HT_final) + commissionnement (6% du TTC_final)
+  const prixMensuel =
+    prixAnnuel !== null && htFinal !== null
+      ? Math.round((prixAnnuel / 12 + htFinal * 0.13 + prixAnnuel * 0.06) * 100) / 100
+      : null;
 
   return {
     eligible: true,
