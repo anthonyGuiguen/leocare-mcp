@@ -226,6 +226,16 @@ const handler = createMcpHandler(async (server) => {
 
 APPELER UNIQUEMENT quand les 4 paramètres sont collectés, validés et convertis — jamais avant.
 
+COLLECTE DES DONNÉES — règles absolues :
+- Poser les questions UNE PAR UNE dans cet ordre exact, même si l'utilisateur donne tout d'un coup
+- Ne jamais poser deux questions dans le même message
+- Tutoyer l'utilisateur, ton décontracté
+- N'utiliser JAMAIS de bloc de code ni de format monospace dans les messages
+- Étape 1 : "Quelle est ta date de naissance ? (ex : 15/03/1990)"
+- Étape 2 : "Et la date d'obtention de ton permis ? (ex : 20/06/2010)"
+- Étape 3 : "Quelle est la date de 1ère mise en circulation de ton véhicule ? (ex : 01/09/2018)"
+- Étape 4 : "Quelle formule t'intéresse ?\n- **F1 — Tiers** : couverture responsabilité civile uniquement\n- **F2 — Tiers+ Bris De Glace** : Tiers + bris de glace\n- **F3 — Tiers+ Confort** : Tiers + bris de glace + vol & incendie avec garanties étendues\n- **F4 — Tous risques** : couverture maximale"
+
 CONVERSION DES DATES :
 - L'utilisateur saisit en JJ/MM/AAAA → convertir systématiquement en YYYY-MM-DD avant l'appel
 - Exemple : "15/03/1990" → "1990-03-15"
@@ -234,11 +244,22 @@ CONVERSION DES DATES :
 VALIDATION AVANT APPEL :
 - date_naissance : dans le passé, âge entre 18 et 99 ans
 - date_permis : dans le passé, au moins 16 ans après date_naissance, pas antérieure à 1950
-- date_mec : dans le passé, entre 1980 et aujourd'hui, postérieure à date_permis - 10 ans
+- date_mec : dans le passé, entre 1980 et aujourd'hui
 - Si une date est invalide ou incohérente, demander poliment de la corriger avant d'appeler
 
-FORMULES :
-- F1 = Tiers, F2 = Tiers+, F3 = Tiers+ Confort, F4 = Tous risques`,
+FORMAT DE RÉPONSE APRÈS L'APPEL — copier mot pour mot :
+"Pour ton profil, voici l'estimation Leocare en formule [nom formule] :
+
+**[prix_mensuel] € / mois**, soit **[prix_annuel] € / an**.
+
+*Cette estimation est indicative. Pour un tarif précis, clique sur le bouton ci-dessus.*"
+
+RÈGLES STRICTES OUTPUT :
+- Mensuel d'abord, annuel ensuite — ne jamais inverser
+- Aucun commentaire sur le prix ("compétitif", "avantageux"…)
+- Aucune suggestion d'infos supplémentaires (bonus/malus, km/an…)
+- Seule proposition autorisée après : "Tu veux essayer une autre formule ?"
+- Si profil non éligible (réponse "PROFIL_NON_ELIGIBLE") : "Désolé, nous ne sommes pas en mesure de te proposer un tarif pour ce profil ([raison]). Tu peux contacter Leocare : [Obtenir mon devis](https://app.leocare.eu/fr/devis-assurance-en-ligne/choix-type-assurance)"`,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       inputSchema: {
         date_naissance: z.string().describe("Date de naissance au format YYYY-MM-DD"),
