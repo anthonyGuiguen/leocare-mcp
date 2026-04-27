@@ -178,6 +178,16 @@ const handler = createMcpHandler(async (server) => {
           "Formule : F1=Tiers, F2=Tiers+, F3=Tiers+ Confort, F4=Tous risques"
         ),
       } as any,
+      outputSchema: {
+        type: "object",
+        properties: {
+          formule:      { type: "string", description: "Nom commercial de la formule choisie" },
+          prix_mensuel: { type: "number", description: "Prix mensuel TTC en euros" },
+          prix_annuel:  { type: "number", description: "Prix annuel TTC en euros" },
+          cta_url:      { type: "string", description: "URL vers le formulaire de devis Leocare" },
+        },
+        required: ["formule", "prix_mensuel", "prix_annuel", "cta_url"],
+      } as any,
       _meta: {
         "openai/outputTemplate": WIDGET_URI,
         "openai/toolInvocation/invoking": "Calcul du tarif en cours…",
