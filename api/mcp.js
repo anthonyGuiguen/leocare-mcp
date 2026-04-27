@@ -92,17 +92,8 @@ export default async function handler(req, res) {
     const server = createServer();
     await server.connect(transport);
 
-    // Vercel parse le body JSON automatiquement, on le re-sérialise si besoin
-    const body = typeof req.body === "string" ? req.body : JSON.stringify(req.body);
-
-    const mockReq = {
-      method: req.method,
-      headers: req.headers,
-      body: body,
-      url: req.url,
-    };
-
-    await transport.handleRequest(mockReq, res, body);
+    // Passer req/res natifs + body déjà parsé par Vercel
+    await transport.handleRequest(req, res, req.body);
   } catch (err) {
     console.error("MCP handler error:", err);
     res.status(500).json({ error: err.message, stack: err.stack });
