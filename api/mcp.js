@@ -83,20 +83,28 @@ export default async function handler(req, res) {
 
   if (req.method === "OPTIONS") return res.status(200).end();
 
-  const transport = new StreamableHTTPServerTransport({
-    sessionIdGenerator: undefined,
-    enableJsonResponse: true,
-  });
+  try {
+    const transport = new StreamableHTTPServerTransport({
+      sessionIdGenerator: undefined,
+      enableJsonResponse: true,
+    });
 
-  const server = createServer();
-  await server.connect(transport);
+    const server = createServer();
+    await server.connect(transport);
 
-  const mockReq = {
-    method: req.method,
-    headers: req.headers,
-    body: req.body,
-    url: req.url,
-  };
+    // Vercel parse le body JSON automatiquement, on le re-sérialise si besoin
+    const body = typeof req.body === "string" ? req.body : JSON.stringify(req.body);
 
-  await transport.handleRequest(mockReq, res, req.body);
+    const mockReq = {
+      method: req.method,
+      headers: req.headers,
+      body: body,
+      url: req.url,
+    };
+
+    await transport.handleRequest(mockReq, res, body);
+  } catch (err) {
+    console.error("MCP handler error:", err);
+    res.status(500).json({ error: err.message, stack: err.stack });
+  }
 }
