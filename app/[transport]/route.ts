@@ -25,7 +25,7 @@ function buildWidgetHtml(): string {
   .row strong{color:#fff;font-weight:500}
   .cta{display:block;background:#1d4ed8;color:#fff;text-align:center;border-radius:10px;padding:13px;font-weight:700;font-size:15px;text-decoration:none}
   .legal{font-size:11px;color:#555;margin-top:12px;line-height:1.5;text-align:center}
-  #debug{margin-top:12px;background:#111;border-radius:8px;padding:10px;width:100%;max-width:360px;font-size:10px;color:#0f0;word-break:break-all;white-space:pre-wrap;display:none}
+  #debug{display:none}
 </style>
 </head>
 <body>
@@ -46,13 +46,6 @@ function buildWidgetHtml(): string {
 <div id="debug"></div>
 <script>
 var shown = false;
-var dbg = null;
-
-function log(label, val){
-  if(!dbg) dbg = document.getElementById('debug');
-  dbg.style.display = 'block';
-  dbg.textContent += '['+label+'] '+JSON.stringify(val).slice(0,500)+'\\n---\\n';
-}
 
 function show(d){
   if(shown) return;
@@ -66,63 +59,18 @@ function show(d){
   document.getElementById('content').style.display='block';
 }
 
-function extract(msg){
-  if(!msg||typeof msg!=='object') return null;
-  // Chercher structuredContent partout
-  var candidates = [
-    msg.structuredContent,
-    msg.params&&msg.params.structuredContent,
-    msg.params&&msg.params.toolResult&&msg.params.toolResult.structuredContent,
-    msg.result&&msg.result.structuredContent,
-    msg.result&&msg.result.toolResult&&msg.result.toolResult.structuredContent,
-    msg.data&&msg.data.structuredContent,
-    msg.toolResult&&msg.toolResult.structuredContent,
-  ];
-  for(var i=0;i<candidates.length;i++){
-    if(candidates[i]&&candidates[i].prix_annuel!==undefined) return candidates[i];
-  }
-  if(msg.prix_annuel!==undefined) return msg;
-  var tr = msg.toolResult||(msg.params&&msg.params.toolResult)||msg.result;
-  if(tr&&tr.prix_annuel!==undefined) return tr;
-  return null;
+function check(){
+  try{
+    var oi = window.openai;
+    if(oi && oi.toolOutput && oi.toolOutput.prix_annuel !== undefined){
+      show(oi.toolOutput);
+      return;
+    }
+  }catch(e){}
+  setTimeout(check, 300);
 }
 
-// 1. Vérifier URL params (?data=...)
-try{
-  var params = new URLSearchParams(window.location.search);
-  var raw = params.get('data');
-  if(raw){ var pd = JSON.parse(decodeURIComponent(raw)); log('urlparam',pd); show(pd); }
-}catch(e){}
-
-// 2. Vérifier window.name
-try{
-  if(window.name){ var wn = JSON.parse(window.name); log('window.name',wn); show(extract(wn)||wn); }
-}catch(e){}
-
-// 3. Vérifier window.openai (SDK legacy)
-try{
-  var oi = window.openai;
-  if(oi){ log('window.openai',oi); if(oi.toolOutput) show(extract(oi.toolOutput)||oi.toolOutput); }
-}catch(e){}
-
-// 4. Écouter TOUS les postMessages
-window.addEventListener('message',function(e){
-  var msg = e.data;
-  log('postmsg',msg);
-  // Répondre au handshake si nécessaire
-  if(msg&&msg.method&&msg.id!==undefined){
-    window.parent.postMessage({jsonrpc:'2.0',id:msg.id,result:{}},'*');
-  }
-  var d = extract(msg);
-  if(d) show(d);
-});
-
-// 5. Essayer de demander le contexte avec plusieurs méthodes candidates
-var reqId = 100;
-var methods = ['ui/getContext','ui/context','getContext','context/get','ui/toolResult','getToolResult'];
-methods.forEach(function(m){
-  window.parent.postMessage({jsonrpc:'2.0',id:reqId++,method:m,params:{}},'*');
-});
+check();
 </script>
 </body>
 </html>`;
