@@ -181,6 +181,7 @@ function createServer() {
           _meta: {
             ui: {
               prefersBorder: false,
+              domain: "https://leocare-mcp.vercel.app",
               csp: {
                 connectDomains: [
                   "https://excel.uat.eu.coherent.global",
