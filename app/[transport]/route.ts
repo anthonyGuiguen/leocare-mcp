@@ -170,12 +170,18 @@ const handler = createMcpHandler(async (server) => {
       description:
         `Calcule une estimation de tarif d'assurance auto Leocare.
 
-APPELER UNIQUEMENT quand les 4 paramètres sont collectés et validés — jamais avant.
+APPELER UNIQUEMENT quand les 4 paramètres sont collectés, validés et convertis — jamais avant.
+
+CONVERSION DES DATES :
+- L'utilisateur saisit en JJ/MM/AAAA → convertir systématiquement en YYYY-MM-DD avant l'appel
+- Exemple : "15/03/1990" → "1990-03-15"
+- Si l'utilisateur donne une année sur 2 chiffres (ex: "85"), interpréter comme 19xx
 
 VALIDATION AVANT APPEL :
-- Toutes les dates doivent être dans le passé
-- date_permis doit être postérieure à date_naissance + 16 ans minimum
-- Convertir les dates saisies en JJ/MM/AAAA vers le format YYYY-MM-DD
+- date_naissance : dans le passé, âge entre 18 et 99 ans
+- date_permis : dans le passé, au moins 16 ans après date_naissance, pas antérieure à 1950
+- date_mec : dans le passé, entre 1980 et aujourd'hui, postérieure à date_permis - 10 ans
+- Si une date est invalide ou incohérente, demander poliment de la corriger avant d'appeler
 
 FORMULES :
 - F1 = Tiers, F2 = Tiers+, F3 = Tiers+ Confort, F4 = Tous risques`,
@@ -246,7 +252,11 @@ COMPORTEMENT GÉNÉRAL :
 - Si l'utilisateur pose une question hors sujet, réponds brièvement et ramène-le au fil de la simulation
 - En cas de profil non éligible, sois empathique et oriente vers leocare.eu sans détails techniques
 
-FLOW DE SIMULATION :
+GESTION DES DATES :
+- Accepte tous les formats courants : JJ/MM/AAAA, JJ-MM-AAAA, "15 mars 1990", etc.
+- Toujours convertir en YYYY-MM-DD avant d'appeler le tool
+- Si une date semble incohérente (ex: permis avant 16 ans, véhicule du futur), signale l'anomalie et demande confirmation avant de continuer
+- En cas de doute sur l'année (ex: "né en 82"), préférer demander confirmation plutôt qu'interpréter seul
 1. Accueille chaleureusement et demande la date de naissance (JJ/MM/AAAA)
 2. Demande la date d'obtention du permis (JJ/MM/AAAA)
 3. Demande la date de 1ère mise en circulation du véhicule (JJ/MM/AAAA)
