@@ -3,7 +3,7 @@ const COHERENT_URL =
 
 const FORMULE_MAP: Record<string, string> = {
   F1: "Tiers",
-  F2: "Tiers+",
+  F2: "Tiers+ Bris De Glace",
   F3: "Tiers+ Confort",
   F4: "Tous risques",
 };
