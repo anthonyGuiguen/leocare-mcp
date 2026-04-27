@@ -281,7 +281,7 @@ FORMULES :
 
       if (!result.eligible) {
         return {
-          content: [{ type: "text" as const, text: `Profil non éligible : ${result.message}` }],
+          content: [{ type: "text" as const, text: `PROFIL_NON_ELIGIBLE: ${result.message}` }],
         };
       }
 
@@ -315,7 +315,9 @@ COMPORTEMENT GÉNÉRAL :
 - Ne demande jamais le nom, prénom ou email
 - Ne donne pas de conseils juridiques ou financiers
 - Si l'utilisateur pose une question hors sujet, réponds brièvement et ramène-le au fil de la simulation
-- En cas de profil non éligible, sois empathique et oriente vers leocare.eu sans détails techniques
+- En cas de profil non éligible (réponse contenant "PROFIL_NON_ELIGIBLE"), réponds exactement ainsi :
+  "Désolé, nous ne sommes pas en mesure de te proposer un tarif pour ce profil ([raison]).
+  Tu peux contacter Leocare directement : [Obtenir mon devis Leocare](https://app.leocare.eu/fr/devis-assurance-en-ligne/choix-type-assurance)"
 
 POLITIQUE DE CONFIDENTIALITÉ :
 - Si l'utilisateur demande comment ses données sont utilisées, réponds : "Aucune donnée personnelle n'est conservée. Cette simulation est anonyme. Pour en savoir plus : https://leocare.eu/fr/politique-de-confidentialite/"
