@@ -124,26 +124,53 @@ export default function handler(req, res) {
     \`;
   }
 
-  // 1. Données via window.openai.toolOutput (Apps SDK legacy)
-  if (window.openai && window.openai.toolOutput) {
+  let msgId = 1;
+
+  function sendToHost(method, params) {
+    window.parent.postMessage({ jsonrpc: '2.0', id: msgId++, method, params }, '*');
+  }
+
+  window.addEventListener('message', (event) => {
+    if (event.source !== window.parent) return;
+    const msg = event.data;
+    if (!msg || msg.jsonrpc !== '2.0') return;
+
+    // 1. Standard MCP Apps — handshake init
+    if (msg.method === 'ui/initialize') {
+      // Répondre au handshake
+      window.parent.postMessage({ jsonrpc: '2.0', id: msg.id, result: {} }, '*');
+      // Les données initiales peuvent être dans params
+      const data = msg.params?.toolResult?.structuredContent
+                ?? msg.params?.structuredContent;
+      if (data) render(data);
+    }
+
+    // 2. Standard MCP Apps — résultat du tool
+    if (msg.method === 'ui/notifications/tool-result') {
+      const data = msg.params?.structuredContent;
+      if (data) render(data);
+    }
+
+    // 3. Standard MCP Apps — input du tool (avant résultat)
+    if (msg.method === 'ui/notifications/tool-input') {
+      // Afficher un état de chargement pendant le calcul
+      document.getElementById('card').innerHTML = '<div class="loading">Calcul en cours…</div>';
+    }
+  });
+
+  // 4. Extension ChatGPT — toolOutput (fallback)
+  if (window.openai?.toolOutput) {
     render(window.openai.toolOutput);
   }
 
-  // 2. Données via openai:set_globals (Apps SDK event)
+  // 5. Extension ChatGPT — set_globals (fallback legacy)
   window.addEventListener('openai:set_globals', (event) => {
     const data = event.detail?.globals?.toolOutput;
     if (data) render(data);
   }, { passive: true });
 
-  // 3. Données via MCP Apps bridge (ui/notifications/tool-result)
-  window.addEventListener('message', (event) => {
-    if (event.source !== window.parent) return;
-    const msg = event.data;
-    if (!msg || msg.jsonrpc !== '2.0') return;
-    if (msg.method !== 'ui/notifications/tool-result') return;
-    const data = msg.params?.structuredContent;
-    if (data) render(data);
-  }, { passive: true });
+  // Signal à l'hôte que le widget est prêt
+  sendToHost('ui/ready', {});
 </script>
 </body>
 </html>`);
