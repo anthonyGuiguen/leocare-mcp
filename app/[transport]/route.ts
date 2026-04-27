@@ -248,15 +248,12 @@ FORMULES :
           "Formule : F1=Tiers, F2=Tiers+, F3=Tiers+ Confort, F4=Tous risques"
         ),
       } as any,
-      outputSchema: {
-        type: "object",
-        properties: {
-          formule:      { type: "string", description: "Nom commercial de la formule choisie" },
-          prix_mensuel: { type: "number", description: "Prix mensuel TTC en euros" },
-          prix_annuel:  { type: "number", description: "Prix annuel TTC en euros" },
-        },
-        required: ["formule", "prix_mensuel", "prix_annuel"],
-      } as any,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      outputSchema: z.object({
+        formule:      z.string().describe("Nom commercial de la formule choisie"),
+        prix_mensuel: z.number().describe("Prix mensuel TTC en euros"),
+        prix_annuel:  z.number().describe("Prix annuel TTC en euros"),
+      }) as any,
       _meta: {
         "openai/outputTemplate": WIDGET_URI,
         "openai/toolInvocation/invoking": "Calcul du tarif en cours…",
