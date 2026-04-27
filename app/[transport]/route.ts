@@ -134,6 +134,40 @@ check();
 </html>`;
 }
 
+/** Valide les dates côté serveur avant d'appeler Coherent. Lance une Error avec un message lisible. */
+function validateDates(date_naissance: string, date_permis: string, date_mec: string): void {
+  const ISO_RE = /^\d{4}-\d{2}-\d{2}$/;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const parse = (s: string, label: string): Date => {
+    if (!ISO_RE.test(s)) throw new Error(`${label} : format invalide (attendu YYYY-MM-DD, reçu "${s}")`);
+    const d = new Date(s);
+    if (isNaN(d.getTime())) throw new Error(`${label} : date invalide "${s}"`);
+    return d;
+  };
+
+  const dn = parse(date_naissance, "date_naissance");
+  const dp = parse(date_permis, "date_permis");
+  const dm = parse(date_mec, "date_mec");
+
+  // date_naissance dans le passé, âge 18-99
+  if (dn >= today) throw new Error("date_naissance : doit être dans le passé");
+  const ageAns = (today.getTime() - dn.getTime()) / (365.25 * 24 * 3600 * 1000);
+  if (ageAns < 18) throw new Error(`date_naissance : l'utilisateur doit avoir au moins 18 ans (âge calculé : ${Math.floor(ageAns)} ans)`);
+  if (ageAns > 99) throw new Error("date_naissance : âge supérieur à 99 ans");
+
+  // date_permis dans le passé, >= 1950, au moins 16 ans après naissance
+  if (dp >= today) throw new Error("date_permis : doit être dans le passé");
+  if (dp.getFullYear() < 1950) throw new Error("date_permis : antérieure à 1950");
+  const agePermis = (dp.getTime() - dn.getTime()) / (365.25 * 24 * 3600 * 1000);
+  if (agePermis < 16) throw new Error(`date_permis : le permis a été obtenu avant les 16 ans (écart calculé : ${Math.floor(agePermis)} ans)`);
+
+  // date_mec dans le passé, entre 1980 et aujourd'hui
+  if (dm >= today) throw new Error("date_mec : doit être dans le passé");
+  if (dm.getFullYear() < 1980) throw new Error("date_mec : antérieure à 1980");
+}
+
 const handler = createMcpHandler(async (server) => {
   const widgetHtml = buildWidgetHtml();
 
@@ -213,6 +247,15 @@ FORMULES :
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async ({ date_naissance, date_permis, date_mec, numero_formule }: any) => {
+      try {
+        validateDates(date_naissance, date_permis, date_mec);
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : "Dates invalides";
+        return {
+          content: [{ type: "text" as const, text: `Erreur de validation : ${msg}. Merci de corriger les données avant de relancer.` }],
+        };
+      }
+
       const result = await simulateTarif({ date_naissance, date_permis, date_mec, numero_formule });
 
       if (!result.eligible) {
@@ -257,6 +300,8 @@ GESTION DES DATES :
 - Toujours convertir en YYYY-MM-DD avant d'appeler le tool
 - Si une date semble incohérente (ex: permis avant 16 ans, véhicule du futur), signale l'anomalie et demande confirmation avant de continuer
 - En cas de doute sur l'année (ex: "né en 82"), préférer demander confirmation plutôt qu'interpréter seul
+
+FLOW DE SIMULATION :
 1. Accueille chaleureusement et demande la date de naissance (JJ/MM/AAAA)
 2. Demande la date d'obtention du permis (JJ/MM/AAAA)
 3. Demande la date de 1ère mise en circulation du véhicule (JJ/MM/AAAA)
