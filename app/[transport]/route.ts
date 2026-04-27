@@ -46,6 +46,14 @@ function buildWidgetHtml(): string {
 <div id="debug"></div>
 <script>
 var shown = false;
+var dbg = null;
+
+function log(label, val){
+  if(!dbg) dbg = document.getElementById('debug');
+  dbg.style.display = 'block';
+  dbg.textContent += '['+label+'] '+JSON.stringify(val).slice(0,500)+'\\n---\\n';
+}
+
 function show(d){
   if(shown) return;
   if(!d || d.prix_annuel===undefined) return;
@@ -57,35 +65,64 @@ function show(d){
   document.getElementById('loading').style.display='none';
   document.getElementById('content').style.display='block';
 }
+
 function extract(msg){
   if(!msg||typeof msg!=='object') return null;
-  var sc = msg.structuredContent
-    || (msg.params&&msg.params.structuredContent)
-    || (msg.params&&msg.params.toolResult&&msg.params.toolResult.structuredContent)
-    || (msg.result&&msg.result.structuredContent)
-    || (msg.data&&msg.data.structuredContent);
-  if(sc&&sc.prix_annuel!==undefined) return sc;
+  // Chercher structuredContent partout
+  var candidates = [
+    msg.structuredContent,
+    msg.params&&msg.params.structuredContent,
+    msg.params&&msg.params.toolResult&&msg.params.toolResult.structuredContent,
+    msg.result&&msg.result.structuredContent,
+    msg.result&&msg.result.toolResult&&msg.result.toolResult.structuredContent,
+    msg.data&&msg.data.structuredContent,
+    msg.toolResult&&msg.toolResult.structuredContent,
+  ];
+  for(var i=0;i<candidates.length;i++){
+    if(candidates[i]&&candidates[i].prix_annuel!==undefined) return candidates[i];
+  }
   if(msg.prix_annuel!==undefined) return msg;
   var tr = msg.toolResult||(msg.params&&msg.params.toolResult)||msg.result;
   if(tr&&tr.prix_annuel!==undefined) return tr;
   return null;
 }
+
+// 1. Vérifier URL params (?data=...)
+try{
+  var params = new URLSearchParams(window.location.search);
+  var raw = params.get('data');
+  if(raw){ var pd = JSON.parse(decodeURIComponent(raw)); log('urlparam',pd); show(pd); }
+}catch(e){}
+
+// 2. Vérifier window.name
+try{
+  if(window.name){ var wn = JSON.parse(window.name); log('window.name',wn); show(extract(wn)||wn); }
+}catch(e){}
+
+// 3. Vérifier window.openai (SDK legacy)
+try{
+  var oi = window.openai;
+  if(oi){ log('window.openai',oi); if(oi.toolOutput) show(extract(oi.toolOutput)||oi.toolOutput); }
+}catch(e){}
+
+// 4. Écouter TOUS les postMessages
 window.addEventListener('message',function(e){
   var msg = e.data;
-  var dbg = document.getElementById('debug');
-  dbg.style.display='block';
-  dbg.textContent += JSON.stringify(msg).slice(0,400)+'\\n---\\n';
-  if(msg&&(msg.method==='ui/initialize'||msg.type==='ui/initialize')){
-    window.parent.postMessage({jsonrpc:'2.0',id:msg.id||1,result:{}},'*');
+  log('postmsg',msg);
+  // Répondre au handshake si nécessaire
+  if(msg&&msg.method&&msg.id!==undefined){
+    window.parent.postMessage({jsonrpc:'2.0',id:msg.id,result:{}},'*');
   }
   var d = extract(msg);
   if(d) show(d);
 });
-// SDK legacy
-var oi = window.openai;
-if(oi&&oi.toolOutput) show(extract(oi.toolOutput)||oi.toolOutput);
-// Signal ready
-window.parent.postMessage({jsonrpc:'2.0',id:1,method:'ui/ready',params:{}},'*');
+
+// 5. Essayer de demander le contexte avec plusieurs méthodes candidates
+var reqId = 100;
+var methods = ['ui/getContext','ui/context','getContext','context/get','ui/toolResult','getToolResult'];
+methods.forEach(function(m){
+  window.parent.postMessage({jsonrpc:'2.0',id:reqId++,method:m,params:{}},'*');
+});
 </script>
 </body>
 </html>`;
