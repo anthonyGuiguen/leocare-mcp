@@ -115,6 +115,6 @@ export async function simulateTarif(params: {
     eligible: true,
     formule: FORMULE_MAP[numero_formule],
     prix_mensuel: prixMensuel ?? undefined,
-    prix_annuel: prixAnnuel !== null ? Math.round(prixAnnuel * 100) / 100 : undefined,
+    prix_annuel: prixAnnuel ?? undefined,
   };
 }
