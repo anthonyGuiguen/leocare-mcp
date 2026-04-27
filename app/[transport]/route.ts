@@ -266,7 +266,7 @@ RÈGLES STRICTES OUTPUT :
         date_permis: z.string().describe("Date d'obtention du permis au format YYYY-MM-DD"),
         date_mec: z.string().describe("Date de première immatriculation au format YYYY-MM-DD"),
         numero_formule: z.string().describe(
-          "Formule : F1=Tiers, F2=Tiers+, F3=Tiers+ Confort, F4=Tous risques"
+          "Formule choisie par l'utilisateur — valeurs possibles :\n- F1 — Tiers : couverture responsabilité civile uniquement\n- F2 — Tiers+ Bris De Glace : Tiers + bris de glace\n- F3 — Tiers+ Confort : Tiers + bris de glace + vol & incendie avec garanties étendues\n- F4 — Tous risques : couverture maximale"
         ),
       } as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
