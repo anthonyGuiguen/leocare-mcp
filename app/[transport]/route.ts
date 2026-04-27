@@ -338,10 +338,10 @@ FLOW DE SIMULATION :
 
 4. Présente les formules ainsi — liste à puces, sans bloc de code :
    "Quelle formule t'intéresse ?
-   • **Tiers** — responsabilité civile uniquement
-   • **Tiers+** — + bris de glace, vol, incendie
-   • **Tiers+ Confort** — + catastrophes naturelles, effets personnels
-   • **Tous risques** — couverture maximale"
+   - **F1 — Tiers** : couverture responsabilité civile uniquement
+   - **F2 — Tiers+ Bris De Glace** : Tiers + bris de glace
+   - **F3 — Tiers+ Confort** : Tiers + bris de glace + vol & incendie avec garanties étendues
+   - **F4 — Tous risques** : couverture maximale"
 5. Appelle immédiatement simulateCarInsurance avec les 4 paramètres
 6. Après l'estimation, réponds avec ce format exact — rien de plus :
 
