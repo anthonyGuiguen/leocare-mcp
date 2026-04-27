@@ -1,15 +1,59 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
+interface QuoteData {
+  formule: string;
+  prix_mensuel: number;
+  prix_annuel: number;
+  cta_url: string;
+}
+
 export default function QuotePage() {
+  const [data, setData] = useState<QuoteData | null>(null);
+
+  useEffect(() => {
+    function handleMessage(event: MessageEvent) {
+      const msg = event.data;
+      if (!msg || msg.jsonrpc !== "2.0") return;
+
+      if (msg.method === "ui/initialize") {
+        // Répondre au handshake
+        window.parent.postMessage({ jsonrpc: "2.0", id: msg.id, result: {} }, "*");
+        const d =
+          msg.params?.toolResult?.structuredContent ??
+          msg.params?.structuredContent;
+        if (d) setData(d);
+      }
+
+      if (msg.method === "ui/notifications/tool-result") {
+        const d = msg.params?.structuredContent;
+        if (d) setData(d);
+      }
+    }
+
+    window.addEventListener("message", handleMessage);
+
+    // Fallback Apps SDK legacy
+    const openai = (window as any).openai;
+    if (openai?.toolOutput) setData(openai.toolOutput);
+
+    // Signaler que le widget est prêt
+    window.parent.postMessage({ jsonrpc: "2.0", id: 1, method: "ui/ready", params: {} }, "*");
+
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
+
   return (
-    <div id="leocare-quote" style={{
+    <div style={{
       fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
       background: "transparent",
       display: "flex",
       justifyContent: "center",
       padding: "8px",
+      margin: 0,
     }}>
-      <div id="card" style={{
+      <div style={{
         background: "#1c1c1e",
         borderRadius: "16px",
         padding: "24px 20px 20px",
@@ -17,47 +61,61 @@ export default function QuotePage() {
         maxWidth: "360px",
         color: "#fff",
       }}>
-        <div style={{ textAlign: "center", color: "#666", padding: "40px 0", fontSize: "14px" }}>
-          Chargement de votre estimation…
-        </div>
+        {!data ? (
+          <div style={{ textAlign: "center", color: "#666", padding: "40px 0", fontSize: "14px" }}>
+            Chargement de votre estimation…
+          </div>
+        ) : (
+          <>
+            <div style={{
+              display: "inline-block", background: "#2c2c2e", borderRadius: "8px",
+              padding: "5px 12px", fontSize: "12px", color: "#aaa", marginBottom: "6px",
+            }}>
+              Ton estimation*
+            </div>
+
+            <div style={{ fontSize: "48px", fontWeight: 800, lineHeight: 1.1, color: "#fff" }}>
+              {data.prix_annuel} €
+              <span style={{ fontSize: "22px", fontWeight: 400, color: "#888" }}> /an</span>
+            </div>
+
+            <div style={{ fontSize: "15px", color: "#888", marginTop: "4px", marginBottom: "18px" }}>
+              soit à partir de {data.prix_mensuel} € /mois
+            </div>
+
+            <div style={{
+              background: "#2c2c2e", borderRadius: "12px",
+              padding: "12px 16px", marginBottom: "16px",
+            }}>
+              <div style={{ fontWeight: 700, fontSize: "13px", marginBottom: "8px" }}>Ta formule</div>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13px", color: "#aaa", padding: "4px 0" }}>
+                <span>Couverture</span>
+                <span style={{ color: "#fff", fontWeight: 500 }}>{data.formule}</span>
+              </div>
+            </div>
+
+            <a
+              href={data.cta_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "block", background: "#1d4ed8", color: "#fff",
+                textAlign: "center", borderRadius: "10px", padding: "13px",
+                fontWeight: 700, fontSize: "15px", textDecoration: "none",
+              }}
+            >
+              Obtenir mon devis précis
+            </a>
+
+            <div style={{
+              fontSize: "11px", color: "#555", marginTop: "12px",
+              lineHeight: 1.5, textAlign: "center",
+            }}>
+              *Prix à partir de, basé sur un profil type. Le tarif définitif est calculé lors du devis en ligne.
+            </div>
+          </>
+        )}
       </div>
-      <script dangerouslySetInnerHTML={{ __html: `
-        (function() {
-          function render(data) {
-            if (!data) return;
-            var card = document.getElementById('card');
-            card.innerHTML =
-              '<div style="display:inline-block;background:#2c2c2e;border-radius:8px;padding:5px 12px;font-size:12px;color:#aaa;margin-bottom:6px">Ton estimation*</div>' +
-              '<div style="font-size:48px;font-weight:800;line-height:1.1;color:#fff">' + data.prix_annuel + ' \u20ac<span style="font-size:22px;font-weight:400;color:#888"> /an</span></div>' +
-              '<div style="font-size:15px;color:#888;margin-top:4px;margin-bottom:18px">soit \u00e0 partir de ' + data.prix_mensuel + ' \u20ac /mois</div>' +
-              '<div style="background:#2c2c2e;border-radius:12px;padding:12px 16px;margin-bottom:16px">' +
-                '<div style="font-weight:700;font-size:13px;margin-bottom:8px">Ta formule</div>' +
-                '<div style="display:flex;justify-content:space-between;font-size:13px;color:#aaa;padding:4px 0"><span>Couverture</span><span style="color:#fff;font-weight:500">' + data.formule + '</span></div>' +
-              '</div>' +
-              '<a href="' + data.cta_url + '" target="_blank" style="display:block;background:#1d4ed8;color:#fff;text-align:center;border-radius:10px;padding:13px;font-weight:700;font-size:15px;text-decoration:none">Obtenir mon devis pr\u00e9cis</a>' +
-              '<div style="font-size:11px;color:#555;margin-top:12px;line-height:1.5;text-align:center">*Prix \u00e0 partir de, bas\u00e9 sur un profil type. Le tarif d\u00e9finitif est calcul\u00e9 lors du devis en ligne.</div>';
-          }
-
-          window.addEventListener('message', function(event) {
-            if (event.source !== window.parent) return;
-            var msg = event.data;
-            if (!msg || msg.jsonrpc !== '2.0') return;
-            if (msg.method === 'ui/initialize') {
-              window.parent.postMessage({ jsonrpc: '2.0', id: msg.id, result: {} }, '*');
-              var d = (msg.params && msg.params.toolResult && msg.params.toolResult.structuredContent)
-                   || (msg.params && msg.params.structuredContent);
-              if (d) render(d);
-            }
-            if (msg.method === 'ui/notifications/tool-result') {
-              var d = msg.params && msg.params.structuredContent;
-              if (d) render(d);
-            }
-          });
-
-          if (window.openai && window.openai.toolOutput) render(window.openai.toolOutput);
-          window.parent.postMessage({ jsonrpc: '2.0', id: 1, method: 'ui/ready', params: {} }, '*');
-        })();
-      ` }} />
     </div>
   );
 }
