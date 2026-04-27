@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/widget", "destination": "/api/widget" },
+    { "source": "/mcp", "destination": "/api/mcp" }
+  ]
+}
