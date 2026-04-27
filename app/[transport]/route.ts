@@ -184,9 +184,8 @@ const handler = createMcpHandler(async (server) => {
           formule:      { type: "string", description: "Nom commercial de la formule choisie" },
           prix_mensuel: { type: "number", description: "Prix mensuel TTC en euros" },
           prix_annuel:  { type: "number", description: "Prix annuel TTC en euros" },
-          cta_url:      { type: "string", description: "URL vers le formulaire de devis Leocare" },
         },
-        required: ["formule", "prix_mensuel", "prix_annuel", "cta_url"],
+        required: ["formule", "prix_mensuel", "prix_annuel"],
       } as any,
       _meta: {
         "openai/outputTemplate": WIDGET_URI,
@@ -211,7 +210,6 @@ const handler = createMcpHandler(async (server) => {
           formule: result.formule,
           prix_mensuel: result.prix_mensuel,
           prix_annuel: result.prix_annuel,
-          cta_url: "https://app.leocare.eu/fr/devis-assurance-en-ligne/choix-type-assurance",
         },
         content: [
           {
