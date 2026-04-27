@@ -1,7 +1,8 @@
 {
   "rewrites": [
     { "source": "/widget", "destination": "/api/widget" },
-    { "source": "/mcp", "destination": "/api/mcp" }
+    { "source": "/mcp", "destination": "/api/mcp" },
+    { "source": "/.well-known/vercel-user-meta", "destination": "/api/vercel-user-meta" }
   ],
   "headers": [
     {
