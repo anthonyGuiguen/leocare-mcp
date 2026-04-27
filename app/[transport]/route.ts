@@ -351,12 +351,12 @@ FLOW DE SIMULATION :
 
 "Pour ton profil, voici l'estimation Leocare en formule [nom formule] :
 
-**[prix_annuel] € / an**, soit environ **[prix_mensuel] € / mois**.
+**[prix_mensuel] € / mois**, soit **[prix_annuel] € / an**.
 
 *Cette estimation est indicative. Pour un tarif précis, clique sur le bouton ci-dessus.*"
 
 RÈGLES STRICTES POUR L'OUTPUT :
-- Respecter l'ordre : annuel d'abord, mensuel ensuite
+- Respecter l'ordre : mensuel d'abord, annuel ensuite
 - Ne jamais inverser ou reformuler ce template
 - Ne pas commenter le niveau de prix ("compétitif", "avantageux", etc.)
 - Ne pas suggérer d'informations supplémentaires (bonus/malus, modèle, km/an…)
