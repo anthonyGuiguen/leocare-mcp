@@ -23,8 +23,8 @@ function buildWidgetHtml(): string {
   html,body{height:100%}
   html{background:#6F43D6}
   body{font-family:'Satoshi',sans-serif;background:linear-gradient(160deg,#6F43D6 0%,#8B6BE0 100%);display:flex;flex-direction:column;align-items:center;padding:28px 16px 32px;min-height:100vh;width:100%}
-  .tagline{font-family:'Paytone One',sans-serif;font-size:20px;color:#fff;text-align:center;margin-bottom:12px;max-width:400px;width:100%;padding:0 8px}
-  .card{background:#fff;border-radius:24px;padding:20px;width:100%;max-width:400px;color:#2E374D;box-shadow:0 8px 32px rgba(0,0,0,.18)}
+  .tagline{font-family:'Paytone One',sans-serif;font-size:20px;color:#fff;text-align:center;margin-top:15px;margin-bottom:12px;max-width:400px;width:100%;padding:0 8px}
+  .card{background:#fff;border-radius:24px;padding:20px;width:100%;max-width:400px;color:#2E374D;box-shadow:0 8px 32px rgba(0,0,0,.18);margin-bottom:15px}
   .card-header{position:relative;display:flex;align-items:center;justify-content:center;margin-bottom:18px}
   .card-icon{position:absolute;left:0;width:40px;height:40px;border-radius:50%;overflow:hidden;padding:2px;background:#6F43D5}
   .card-title{font-family:'Paytone One',sans-serif;font-size:24px;color:#2E374D;text-align:center}
