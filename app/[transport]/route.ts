@@ -376,5 +376,20 @@ FLOW DE SIMULATION :
 6. Après l'estimation, reproduis UNIQUEMENT le bloc défini dans la description du tool — rien d'autre.`,
 }, { basePath: "", maxDuration: 60 });
 
-export const GET = handler;
-export const POST = handler;
+import { NextRequest, NextResponse } from "next/server";
+
+function isHumanBrowser(req: NextRequest): boolean {
+  const accept = req.headers.get("accept") ?? "";
+  return accept.includes("text/html");
+}
+
+export async function GET(req: NextRequest) {
+  if (isHumanBrowser(req)) {
+    return NextResponse.redirect(new URL("/", req.url));
+  }
+  return handler(req);
+}
+
+export async function POST(req: NextRequest) {
+  return handler(req);
+}
