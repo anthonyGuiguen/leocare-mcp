@@ -280,6 +280,7 @@ INTERDIT après ce bloc : tout commentaire, toute explication, toute suggestion 
       annotations: {
         readOnlyHint: true,
         openWorldHint: false,
+        destructiveHint: false,
       },
       _meta: {
         "openai/outputTemplate": WIDGET_URI,
