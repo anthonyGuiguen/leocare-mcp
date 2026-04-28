@@ -42,12 +42,14 @@ function getAllowedOrigin(request: NextRequest): string {
   return ALLOWED_ORIGINS.includes(origin) ? origin : "";
 }
 
-function getClientIp(request: NextRequest): string {
-  return (
+function getRateLimitKey(request: NextRequest): string {
+  const sessionId = request.headers.get("mcp-session-id");
+  if (sessionId) return `session_${sessionId}`;
+  const ip =
     request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
     request.headers.get("x-real-ip") ??
-    "unknown"
-  );
+    "unknown";
+  return `ip_${ip}`;
 }
 
 export async function middleware(request: NextRequest) {
@@ -67,8 +69,8 @@ export async function middleware(request: NextRequest) {
   if (request.method === "POST" && request.nextUrl.pathname.startsWith("/mcp")) {
     const rl = getRatelimit();
     if (rl) {
-      const ip = getClientIp(request);
-      const { success, remaining, reset } = await rl.limit(ip);
+      const key = getRateLimitKey(request);
+      const { success, remaining, reset } = await rl.limit(key);
 
       if (!success) {
         const response = new NextResponse(
