@@ -16,6 +16,7 @@ const FORMULE_MAP: Record<NumeroFormule, string> = {
 
 export interface TarifResult {
   eligible: boolean;
+  reason?: "exclusion" | "error";
   formule?: string;
   prix_mensuel?: number;
   prix_annuel?: number;
@@ -112,8 +113,18 @@ export async function simulateTarif(params: {
   const outputs = data?.response_data?.outputs ?? {};
   const etat: string = outputs.etat_du_profil ?? "";
 
-  if (!etat.includes("OK")) {
-    return { eligible: false, message: `Profil non éligible : ${etat}` };
+  // Détection des exclusions métier : champs exclusion_* non vides
+  const exclusions: string[] = Object.entries(outputs)
+    .filter(([key, val]) => key.startsWith("exclusion_") && val !== "" && val !== null && val !== undefined)
+    .map(([key]) => key.replace("exclusion_", ""));
+
+  if (exclusions.length > 0 || !etat.includes("OK")) {
+    console.error("[coherent] profil exclu", { etat, exclusions });
+    return {
+      eligible: false,
+      reason: "exclusion",
+      message: "PROFIL_EXCLU",
+    };
   }
 
   const prixAnnuelRaw: number | null = outputs.TTC_final_si_etat_OK ?? outputs.TTC_final ?? null;

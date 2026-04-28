@@ -1,7 +1,7 @@
 import { createMcpHandler } from "mcp-handler";
 import { z } from "zod";
 import { simulateTarif } from "@/lib/coherent";
-import { ACCROCHE, FORMULES, INELIGIBLE_TEMPLATE, OUTPUT_TEMPLATE, QUESTIONS } from "@/lib/prompts";
+import { ACCROCHE, EXCLUDED_TEMPLATE, FORMULES, INELIGIBLE_TEMPLATE, OUTPUT_TEMPLATE, QUESTIONS } from "@/lib/prompts";
 
 const WIDGET_URI = "ui://leocare/quote.html";
 
@@ -252,7 +252,13 @@ VALIDATION AVANT APPEL :
 FORMAT DE RÉPONSE APRÈS L'APPEL — reproduire ce bloc EXACTEMENT, sans ajouter ni supprimer un seul mot :
 ${OUTPUT_TEMPLATE}
 
-INTERDIT après ce bloc : tout commentaire, toute explication, toute suggestion sur le prix ou la couverture.`,
+INTERDIT après ce bloc : tout commentaire, toute explication, toute suggestion sur le prix ou la couverture.
+
+CAS SPÉCIAUX :
+- Si la réponse contient "PROFIL_EXCLU", reproduire exactement :
+  "${EXCLUDED_TEMPLATE}"
+- Si la réponse contient "PROFIL_NON_ELIGIBLE", reproduire exactement :
+  "${INELIGIBLE_TEMPLATE}"`,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       inputSchema: {
         date_naissance: z.string().describe("Date de naissance au format YYYY-MM-DD"),
@@ -295,6 +301,11 @@ INTERDIT après ce bloc : tout commentaire, toute explication, toute suggestion 
       const result = await simulateTarif({ date_naissance, date_permis, date_mec, numero_formule });
 
       if (!result.eligible) {
+        if (result.reason === "exclusion") {
+          return {
+            content: [{ type: "text" as const, text: "PROFIL_EXCLU" }],
+          };
+        }
         return {
           content: [{ type: "text" as const, text: `PROFIL_NON_ELIGIBLE: ${result.message}` }],
         };
@@ -333,6 +344,8 @@ COMPORTEMENT GÉNÉRAL :
 - Si l'utilisateur pose une question hors sujet, ne réponds pas — ramène-le directement vers la simulation
 - En cas de profil non éligible (réponse contenant "PROFIL_NON_ELIGIBLE"), réponds exactement ainsi :
   "${INELIGIBLE_TEMPLATE}"
+- En cas de profil exclu (réponse contenant "PROFIL_EXCLU"), réponds exactement ainsi :
+  "${EXCLUDED_TEMPLATE}"
 
 POLITIQUE DE CONFIDENTIALITÉ :
 - Si l'utilisateur demande comment ses données sont utilisées, réponds : "Aucune donnée personnelle n'est conservée. Cette simulation est anonyme. Pour en savoir plus : https://leocare.eu/fr/politique-de-confidentialite/"

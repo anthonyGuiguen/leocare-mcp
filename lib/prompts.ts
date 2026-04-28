@@ -29,3 +29,7 @@ Tu veux essayer une autre formule ?"`;
 
 export const INELIGIBLE_TEMPLATE = `Désolé, nous ne sommes pas en mesure de te proposer un tarif pour ce profil ([raison]).
 Tu peux contacter Leocare directement : [Obtenir mon devis Leocare](https://app.leocare.eu/fr/devis-assurance-en-ligne/choix-type-assurance)`;
+
+export const EXCLUDED_TEMPLATE = `Avec les données que tu m'as fournies, je ne suis malheureusement pas en mesure de générer une estimation par ici.
+Mais bonne nouvelle : notre application peut aller plus loin et trouver la formule qui te correspond !
+👉 [Faire mon devis sur Leocare](https://app.leocare.eu/fr/devis-assurance-en-ligne/choix-type-assurance)`;
