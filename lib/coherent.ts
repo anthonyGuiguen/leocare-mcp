@@ -103,7 +103,9 @@ export async function simulateTarif(params: {
 
   if (!response.ok) {
     const errText = await response.text();
-    throw new Error(`Erreur API Coherent ${response.status} : ${errText}`);
+    // Log interne uniquement — ne jamais exposer le détail au client
+    console.error(`[coherent] HTTP ${response.status}`, errText);
+    throw new Error("Le service de tarification est temporairement indisponible. Merci de réessayer.");
   }
 
   const data = await response.json();
