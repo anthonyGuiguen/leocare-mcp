@@ -107,29 +107,39 @@ function buildWidgetHtml(): string {
 
   </div>
 </div>
+<script src="https://leocare-mcp.vercel.app/ext-apps.js"></script>
 <script>
 var shown=false;
 function fmt(iso){if(!iso)return'—';var p=iso.split('-');return p.length!==3?iso:p[2]+'/'+p[1]+'/'+p[0];}
-function show(d,input){
+function show(structured,args){
   if(shown)return;
-  if(!d||d.prix_annuel===undefined)return;
+  if(!structured||structured.prix_annuel===undefined)return;
   shown=true;
-  document.getElementById('h-formule').textContent=d.formule||'';
-  document.getElementById('monthly').textContent=d.prix_mensuel;
-  document.getElementById('annual').textContent=d.prix_annuel;
-  if(input){
-    document.getElementById('r-naissance').textContent=fmt(input.date_naissance);
-    document.getElementById('r-permis').textContent=fmt(input.date_permis);
-    document.getElementById('r-mec').textContent=fmt(input.date_mec);
+  document.getElementById('h-formule').textContent=structured.formule||'';
+  document.getElementById('monthly').textContent=structured.prix_mensuel;
+  document.getElementById('annual').textContent=structured.prix_annuel;
+  if(args){
+    document.getElementById('r-naissance').textContent=fmt(args.date_naissance);
+    document.getElementById('r-permis').textContent=fmt(args.date_permis);
+    document.getElementById('r-mec').textContent=fmt(args.date_mec);
   }
   document.getElementById('loading').style.display='none';
   document.getElementById('content').style.display='block';
 }
-function check(){
-  try{var oi=window.openai;if(oi&&oi.toolOutput&&oi.toolOutput.prix_annuel!==undefined){show(oi.toolOutput,oi.toolInput);return;}}catch(e){}
-  setTimeout(check,300);
-}
-check();
+
+var toolArgs=null;
+var app=new MCPExtApps.App({name:'LeocareWidget',version:'1.0.0'},{});
+
+app.ontoolinput=function(params){
+  toolArgs=params.arguments||null;
+};
+
+app.ontoolresult=function(params){
+  var sc=params.structuredContent||null;
+  show(sc,toolArgs);
+};
+
+app.connect().catch(function(){});
 </script>
 </body>
 </html>`;
@@ -177,7 +187,7 @@ const handler = createMcpHandler(async (server) => {
     WIDGET_URI,
     {
       title: "Leocare Quote Widget",
-      mimeType: "text/html+skybridge",
+      mimeType: "text/html;profile=mcp-app",
       _meta: {
         "openai/widgetDescription": "Carte de tarification assurance auto Leocare",
         "openai/widgetPrefersBorder": false,
@@ -188,6 +198,7 @@ const handler = createMcpHandler(async (server) => {
               "https://fonts.googleapis.com",
               "https://fonts.gstatic.com",
               "https://api.fontshare.com",
+              "https://leocare-mcp.vercel.app",
             ],
           },
         },
@@ -197,7 +208,7 @@ const handler = createMcpHandler(async (server) => {
       contents: [
         {
           uri: uri.href,
-          mimeType: "text/html+skybridge",
+          mimeType: "text/html;profile=mcp-app",
           text: widgetHtml,
           _meta: {
             "openai/widgetDescription": "Carte de tarification assurance auto Leocare",
@@ -209,6 +220,7 @@ const handler = createMcpHandler(async (server) => {
                   "https://fonts.googleapis.com",
                   "https://fonts.gstatic.com",
                   "https://api.fontshare.com",
+                  "https://leocare-mcp.vercel.app",
                 ],
               },
             },
@@ -279,6 +291,7 @@ INTERDIT après ce bloc : tout commentaire, toute explication, toute suggestion 
         "openai/toolInvocation/invoked": "Tarif calculé.",
         "openai/widgetAccessible": false,
         "openai/resultCanProduceWidget": true,
+        ui: { resourceUri: WIDGET_URI },
       },
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -315,6 +328,7 @@ INTERDIT après ce bloc : tout commentaire, toute explication, toute suggestion 
         _meta: {
           "openai/outputTemplate": WIDGET_URI,
           "openai/resultCanProduceWidget": true,
+          ui: { resourceUri: WIDGET_URI },
         },
       };
     }
