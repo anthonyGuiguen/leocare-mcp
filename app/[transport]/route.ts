@@ -261,7 +261,7 @@ FORMAT DE RÉPONSE APRÈS L'APPEL — reproduire ce bloc EXACTEMENT, sans ajoute
 
 Tu veux essayer une autre formule ?"
 
-INTERDIT après ce bloc : tout commentaire, toute explication, toute suggestion sur le prix ou la couverture.
+INTERDIT après ce bloc : tout commentaire, toute explication, toute suggestion sur le prix ou la couverture.`,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       inputSchema: {
         date_naissance: z.string().describe("Date de naissance au format YYYY-MM-DD"),
