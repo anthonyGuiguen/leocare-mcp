@@ -258,7 +258,7 @@ INTERDIT après ce bloc : tout commentaire, toute explication, toute suggestion 
         date_naissance: z.string().describe("Date de naissance au format YYYY-MM-DD"),
         date_permis: z.string().describe("Date d'obtention du permis au format YYYY-MM-DD"),
         date_mec: z.string().describe("Date de première immatriculation au format YYYY-MM-DD"),
-        numero_formule: z.string().describe(
+        numero_formule: z.enum(["F1", "F2", "F3", "F4"]).describe(
           "Formule choisie par l'utilisateur — valeurs possibles :\n- F1 — Tiers : couverture responsabilité civile uniquement\n- F2 — Tiers+ Bris De Glace : Tiers + bris de glace\n- F3 — Tiers+ Confort : Tiers + bris de glace + vol & incendie avec garanties étendues\n- F4 — Tous risques : couverture maximale"
         ),
       } as any,

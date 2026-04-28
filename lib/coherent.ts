@@ -4,7 +4,10 @@ if (!COHERENT_URL) throw new Error("COHERENT_API_URL environment variable is not
 const SYNTHETIC_KEY = process.env.COHERENT_SYNTHETIC_KEY as string;
 if (!SYNTHETIC_KEY) throw new Error("COHERENT_SYNTHETIC_KEY environment variable is not set");
 
-const FORMULE_MAP: Record<string, string> = {
+const VALID_FORMULES = ["F1", "F2", "F3", "F4"] as const;
+type NumeroFormule = typeof VALID_FORMULES[number];
+
+const FORMULE_MAP: Record<NumeroFormule, string> = {
   F1: "Tiers",
   F2: "Tiers+ Bris De Glace",
   F3: "Tiers+ Confort",
@@ -26,6 +29,12 @@ export async function simulateTarif(params: {
   numero_formule: string;
 }): Promise<TarifResult> {
   const { date_naissance, date_permis, date_mec, numero_formule } = params;
+
+  if (!(VALID_FORMULES as readonly string[]).includes(numero_formule)) {
+    throw new Error(`numero_formule invalide : "${numero_formule}". Valeurs autorisées : ${VALID_FORMULES.join(", ")}`);
+  }
+  const formule = numero_formule as NumeroFormule;
+
   const today = new Date().toISOString().slice(0, 10);
 
   const body = {
@@ -60,7 +69,7 @@ export async function simulateTarif(params: {
         mode_acquisition: "Comptant/Crédit",
         nb_cond: 1,
         nb_mois_assu_cp: 60,
-        numero_formule: numero_formule,
+        numero_formule: formule,
         sin_bdg: 0, sin_corp_nr: 0, sin_corp_resp: 0,
         sin_inc: 0, sin_mat_nr: 0, sin_mat_resp: 0, sin_vol: 0,
         type_parking: "Sans garage",
@@ -117,7 +126,7 @@ export async function simulateTarif(params: {
 
   return {
     eligible: true,
-    formule: FORMULE_MAP[numero_formule],
+    formule: FORMULE_MAP[formule],
     prix_mensuel: prixMensuel ?? undefined,
     prix_annuel: prixAnnuel ?? undefined,
   };
