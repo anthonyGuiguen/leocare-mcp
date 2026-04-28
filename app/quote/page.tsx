@@ -2,6 +2,23 @@
 
 import { useEffect, useState } from "react";
 
+// Origines LLM autorisées à envoyer des postMessages au widget
+const ALLOWED_ORIGINS = [
+  "https://chatgpt.com",
+  "https://chat.openai.com",
+  "https://claude.ai",
+  "https://copilot.microsoft.com",
+  "https://leocare-mcp.vercel.app",
+];
+
+// URL de fallback si cta_url est absente ou invalide
+const FALLBACK_CTA = "https://app.leocare.eu/fr/devis-assurance-en-ligne/choix-type-assurance";
+
+function sanitizeCtaUrl(url: unknown): string {
+  if (typeof url === "string" && url.startsWith("https://")) return url;
+  return FALLBACK_CTA;
+}
+
 interface QuoteData {
   formule: string;
   prix_mensuel: number;
@@ -47,6 +64,9 @@ export default function QuotePage() {
     }
 
     function handleMessage(event: MessageEvent) {
+      // Rejeter les messages provenant d'origines non autorisées
+      if (!ALLOWED_ORIGINS.includes(event.origin)) return;
+
       const msg = event.data;
 
       if (debug) {
@@ -60,7 +80,7 @@ export default function QuotePage() {
       if (msg?.method === "ui/initialize" || msg?.type === "ui/initialize") {
         window.parent.postMessage(
           { jsonrpc: "2.0", id: msg.id ?? 1, result: {} },
-          "*"
+          event.origin
         );
       }
 
@@ -184,7 +204,7 @@ export default function QuotePage() {
             </div>
 
             <a
-              href={data.cta_url}
+              href={sanitizeCtaUrl(data.cta_url)}
               target="_blank"
               rel="noopener noreferrer"
               style={{
