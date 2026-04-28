@@ -1,5 +1,8 @@
-const COHERENT_URL =
-  "https://excel.uat.eu.coherent.global/leocare/api/v3/folders/Tarification%20CMAM/services/Calculette%20CMAM%20V2%20-%20version%20Coherent/execute";
+const COHERENT_URL = process.env.COHERENT_API_URL as string;
+if (!COHERENT_URL) throw new Error("COHERENT_API_URL environment variable is not set");
+
+const SYNTHETIC_KEY = process.env.COHERENT_SYNTHETIC_KEY as string;
+if (!SYNTHETIC_KEY) throw new Error("COHERENT_SYNTHETIC_KEY environment variable is not set");
 
 const FORMULE_MAP: Record<string, string> = {
   F1: "Tiers",
@@ -23,7 +26,6 @@ export async function simulateTarif(params: {
   numero_formule: string;
 }): Promise<TarifResult> {
   const { date_naissance, date_permis, date_mec, numero_formule } = params;
-  const SYNTHETIC_KEY = process.env.COHERENT_SYNTHETIC_KEY;
   const today = new Date().toISOString().slice(0, 10);
 
   const body = {
