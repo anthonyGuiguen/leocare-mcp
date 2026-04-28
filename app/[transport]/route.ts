@@ -1,6 +1,7 @@
 import { createMcpHandler } from "mcp-handler";
 import { z } from "zod";
 import { simulateTarif } from "@/lib/coherent";
+import { ACCROCHE, FORMULES, INELIGIBLE_TEMPLATE, OUTPUT_TEMPLATE, QUESTIONS } from "@/lib/prompts";
 
 const WIDGET_URI = "ui://leocare/quote.html";
 
@@ -232,14 +233,10 @@ COLLECTE DES DONNÉES — règles absolues :
 - Tutoyer l'utilisateur, ton décontracté
 - N'utiliser JAMAIS de bloc de code ni de format monospace dans les messages
 - Étape 1 : Message d'accroche + première question dans le même message :
-  "👋 Bienvenue chez **Leocare**, l'assurance auto 100 % en ligne !
-  🚗 En moins de 2 minutes, je te donne une estimation de ta prime selon ton profil et la formule de ton choix.
-  C'est parti — juste 4 questions rapides 🎯
-
-  Quelle est ta date de naissance ? (ex : 15/03/1990)"
-- Étape 2 : "Et la date d'obtention de ton permis ? (ex : 20/06/2010)"
-- Étape 3 : "Quelle est la date de 1ère mise en circulation de ton véhicule ? (ex : 01/09/2018)"
-- Étape 4 : "Quelle formule t'intéresse ?\n- **F1 — Tiers** : couverture responsabilité civile uniquement\n- **F2 — Tiers+ Bris De Glace** : Tiers + bris de glace\n- **F3 — Tiers+ Confort** : Tiers + bris de glace + vol & incendie avec garanties étendues\n- **F4 — Tous risques** : couverture maximale"
+  "${ACCROCHE}"
+- Étape 2 : "${QUESTIONS.permis}"
+- Étape 3 : "${QUESTIONS.mec}"
+- Étape 4 : "${QUESTIONS.formule}"
 
 CONVERSION DES DATES :
 - L'utilisateur saisit en JJ/MM/AAAA → convertir systématiquement en YYYY-MM-DD avant l'appel
@@ -253,13 +250,7 @@ VALIDATION AVANT APPEL :
 - Si une date est invalide ou incohérente, demander poliment de la corriger avant d'appeler
 
 FORMAT DE RÉPONSE APRÈS L'APPEL — reproduire ce bloc EXACTEMENT, sans ajouter ni supprimer un seul mot :
-"Pour ton profil, voici l'estimation Leocare en formule [nom formule] :
-
-**[prix_mensuel] € / mois**, soit **[prix_annuel] € / an**.
-
-*Cette estimation est indicative. Pour un tarif précis, clique sur le bouton ci-dessus.*
-
-Tu veux essayer une autre formule ?"
+${OUTPUT_TEMPLATE}
 
 INTERDIT après ce bloc : tout commentaire, toute explication, toute suggestion sur le prix ou la couverture.`,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -341,8 +332,7 @@ COMPORTEMENT GÉNÉRAL :
 - Ne donne pas de conseils juridiques ou financiers
 - Si l'utilisateur pose une question hors sujet, ne réponds pas — ramène-le directement vers la simulation
 - En cas de profil non éligible (réponse contenant "PROFIL_NON_ELIGIBLE"), réponds exactement ainsi :
-  "Désolé, nous ne sommes pas en mesure de te proposer un tarif pour ce profil ([raison]).
-  Tu peux contacter Leocare directement : [Obtenir mon devis Leocare](https://app.leocare.eu/fr/devis-assurance-en-ligne/choix-type-assurance)"
+  "${INELIGIBLE_TEMPLATE}"
 
 POLITIQUE DE CONFIDENTIALITÉ :
 - Si l'utilisateur demande comment ses données sont utilisées, réponds : "Aucune donnée personnelle n'est conservée. Cette simulation est anonyme. Pour en savoir plus : https://leocare.eu/fr/politique-de-confidentialite/"
@@ -355,24 +345,12 @@ GESTION DES DATES :
 
 FLOW DE SIMULATION :
 1. Commence TOUJOURS par ce message d'accroche exact, puis enchaîne immédiatement avec la première question dans le même message :
-   "👋 Bienvenue chez **Leocare**, l'assurance auto 100 % en ligne !
-   🚗 En moins de 2 minutes, je te donne une estimation de ta prime selon ton profil et la formule de ton choix.
-   C'est parti — juste 4 questions rapides 🎯
-
-   Quelle est ta date de naissance ? (ex : 15/03/1990)"
-
-2. Demande la date du permis avec un exemple :
-   "Et la date d'obtention de ton permis ? (ex : 20/06/2010)"
-
-3. Demande la date de mise en circulation avec un exemple :
-   "Quelle est la date de 1ère mise en circulation de ton véhicule ? (ex : 01/09/2018)"
-
-4. Présente les formules ainsi — liste à puces, sans bloc de code :
+   "${ACCROCHE}"
+2. Demande la date du permis : "${QUESTIONS.permis}"
+3. Demande la date de mise en circulation : "${QUESTIONS.mec}"
+4. Présente les formules :
    "Quelle formule t'intéresse ?
-   - **F1 — Tiers** : couverture responsabilité civile uniquement
-   - **F2 — Tiers+ Bris De Glace** : Tiers + bris de glace
-   - **F3 — Tiers+ Confort** : Tiers + bris de glace + vol & incendie avec garanties étendues
-   - **F4 — Tous risques** : couverture maximale"
+   ${FORMULES}"
 5. Appelle immédiatement simulateCarInsurance avec les 4 paramètres
 6. Après l'estimation, reproduis UNIQUEMENT le bloc défini dans la description du tool — rien d'autre.`,
 }, { basePath: "", maxDuration: 60 });
