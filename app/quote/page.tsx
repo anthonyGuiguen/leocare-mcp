@@ -53,7 +53,7 @@ export default function QuotePage() {
   const [data, setData] = useState<QuoteData | null>(null);
   const [debugLog, setDebugLog] = useState<string[]>([]);
 
-  const debug = process.env.NODE_ENV !== "production";
+  const debug = process.env.NEXT_PUBLIC_DEBUG_WIDGET === "true";
 
   useEffect(() => {
     // Tenter de récupérer depuis window.openai (SDK legacy)

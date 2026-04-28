@@ -267,12 +267,13 @@ CAS SPÉCIAUX :
         numero_formule: z.enum(["F1", "F2", "F3", "F4"]).describe(
           "Formule choisie par l'utilisateur — valeurs possibles :\n- F1 — Tiers : couverture responsabilité civile uniquement\n- F2 — Tiers+ Bris De Glace : Tiers + bris de glace\n- F3 — Tiers+ Confort : Tiers + bris de glace + vol & incendie avec garanties étendues\n- F4 — Tous risques : couverture maximale"
         ),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- mcp-handler n'exporte pas ses types ZodRawShape
       } as any,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       outputSchema: z.object({
         formule:      z.string().describe("Nom commercial de la formule choisie"),
         prix_mensuel: z.number().describe("Prix mensuel TTC en euros"),
         prix_annuel:  z.number().describe("Prix annuel TTC en euros"),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- même raison
       }) as any,
       annotations: {
         readOnlyHint: true,
@@ -287,8 +288,12 @@ CAS SPÉCIAUX :
         "openai/resultCanProduceWidget": true,
       },
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async ({ date_naissance, date_permis, date_mec, numero_formule }: any) => {
+    async ({ date_naissance, date_permis, date_mec, numero_formule }: {
+      date_naissance: string;
+      date_permis: string;
+      date_mec: string;
+      numero_formule: string;
+    }) => {
       try {
         validateDates(date_naissance, date_permis, date_mec);
       } catch (err: unknown) {

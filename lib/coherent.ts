@@ -4,6 +4,8 @@ if (!COHERENT_URL) throw new Error("COHERENT_API_URL environment variable is not
 const SYNTHETIC_KEY = process.env.COHERENT_SYNTHETIC_KEY as string;
 if (!SYNTHETIC_KEY) throw new Error("COHERENT_SYNTHETIC_KEY environment variable is not set");
 
+const COHERENT_VERSION_ID = process.env.COHERENT_VERSION_ID ?? "3bdeb9de-ba23-4458-bccc-4e9eb7efff73";
+
 const VALID_FORMULES = ["F1", "F2", "F3", "F4"] as const;
 type NumeroFormule = typeof VALID_FORMULES[number];
 
@@ -80,11 +82,11 @@ export async function simulateTarif(params: {
       },
     },
     request_meta: {
-      version_id: "3bdeb9de-ba23-4458-bccc-4e9eb7efff73",
+      version_id: COHERENT_VERSION_ID,
       transaction_date: null,
       call_purpose: "Leocare GPT simulation",
       source_system: "leocare-mcp",
-      correlation_id: `mcp-${Date.now()}`,
+      correlation_id: crypto.randomUUID(),
       requested_output: null,
       service_category: "All",
       excel_file_writer: null,
