@@ -1,9 +1,81 @@
 export default function HomePage() {
+  const ICON_SVG = `<svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="60" fill="#6F43D5"/><path fill-rule="evenodd" clip-rule="evenodd" d="M45.1533 39.5781C42.8933 40.2901 40.2463 40.7311 38.2453 40.7311C31.9343 40.7311 27.5273 36.4021 27.5273 30.2031C27.5273 23.9521 31.9263 19.7521 38.4733 19.7521C40.5383 19.7521 43.0353 20.1481 44.8353 20.7611L45.7303 21.0661L44.9703 25.2451L43.8303 24.9541C41.9243 24.4681 40.0273 24.1901 38.6263 24.1901C34.8103 24.1901 32.3453 26.5651 32.3453 30.2411C32.3453 33.8941 34.6913 36.2561 38.3213 36.2561C39.6693 36.2561 41.8933 35.8901 44.1263 35.3031L45.2603 35.0041L46.0873 39.2841L45.1533 39.5781ZM27.0003 13.0001L20.6613 37.0091C20.2263 37.0511 19.8303 37.0731 19.4883 37.0731C18.8223 37.0731 18.1993 36.9961 17.6223 36.8491C17.3883 36.7911 17.1593 36.7161 16.9463 36.6031C15.5503 35.8681 15.0003 33.5281 15.0003 31.0001V13.0001H10.0003V31.0001C10.0003 36.2921 12.2643 40.7151 16.3933 41.7471C17.3173 41.9621 18.3043 42.0551 19.3353 42.0591L17.3153 49.7541L50.0003 44.0001V13.0001H27.0003Z" fill="white"/></svg>`;
+
   return (
-    <main style={{ padding: "2rem", fontFamily: "sans-serif" }}>
-      <h1>Leocare MCP Server</h1>
-      <p>Serveur MCP pour la simulation de tarifs assurance auto Leocare.</p>
-      <p>Endpoint MCP : <code>/mcp</code></p>
-    </main>
+    <html lang="fr">
+      <head>
+        <meta charSet="UTF-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <title>Leocare — Connecteur ChatGPT</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link href="https://fonts.googleapis.com/css2?family=Paytone+One&display=swap" rel="stylesheet" />
+        <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet" />
+        <style>{`
+          *{box-sizing:border-box;margin:0;padding:0}
+          html,body{height:100%}
+          html{background:#6F43D6}
+          body{
+            font-family:'Satoshi',sans-serif;
+            background:linear-gradient(160deg,#6F43D6 0%,#8B6BE0 100%);
+            min-height:100vh;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:center;
+            padding:32px 16px;
+          }
+          .logo{width:64px;height:64px;border-radius:16px;overflow:hidden;margin-bottom:20px}
+          .logo svg{width:64px;height:64px}
+          h1{font-family:'Paytone One',sans-serif;font-size:28px;color:#fff;text-align:center;margin-bottom:12px}
+          .subtitle{font-size:16px;color:rgba(255,255,255,0.8);text-align:center;max-width:380px;line-height:1.6;margin-bottom:32px}
+          .card{background:#fff;border-radius:24px;padding:24px;width:100%;max-width:420px;box-shadow:0 8px 32px rgba(0,0,0,0.18);margin-bottom:24px}
+          .card-title{font-family:'Satoshi',sans-serif;font-weight:700;font-size:13px;color:#58627C;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px}
+          .url-row{display:flex;align-items:center;gap:10px;background:#F5F4FF;border-radius:12px;padding:12px 16px}
+          .url-text{font-family:'Satoshi',sans-serif;font-size:14px;font-weight:500;color:#6F43D6;flex:1;word-break:break-all}
+          .copy-btn{background:none;border:none;cursor:pointer;color:#6F43D6;padding:4px;border-radius:6px;display:flex;align-items:center}
+          .steps{margin-top:16px;display:flex;flex-direction:column;gap:10px}
+          .step{display:flex;align-items:flex-start;gap:12px}
+          .step-num{width:24px;height:24px;border-radius:50%;background:#6F43D6;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+          .step-text{font-size:14px;color:#2E374D;line-height:1.5}
+          .step-text b{color:#2E374D}
+          .cta{display:block;background:#6F43D6;color:#fff;text-align:center;border-radius:50px;padding:16px;font-family:'Satoshi',sans-serif;font-weight:700;font-size:16px;text-decoration:none;width:100%;max-width:420px;margin-bottom:16px}
+          .footer{font-size:13px;color:rgba(255,255,255,0.65);text-align:center}
+          .footer a{color:rgba(255,255,255,0.85);text-decoration:underline}
+        `}</style>
+      </head>
+      <body>
+        <div className="logo" dangerouslySetInnerHTML={{ __html: ICON_SVG }} />
+        <h1>Leocare × ChatGPT</h1>
+        <p className="subtitle">Obtenez une estimation de votre assurance auto en 2 minutes, directement dans ChatGPT.</p>
+
+        <div className="card">
+          <div className="card-title">URL du connecteur</div>
+          <div className="url-row">
+            <span className="url-text">https://leocare-mcp.vercel.app/mcp</span>
+            <button className="copy-btn" onClick={() => navigator.clipboard.writeText("https://leocare-mcp.vercel.app/mcp")} title="Copier">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="9" height="9" rx="2" stroke="#6F43D6" strokeWidth="1.5"/><path d="M3 11V3a2 2 0 0 1 2-2h8" stroke="#6F43D6" strokeWidth="1.5" strokeLinecap="round"/></svg>
+            </button>
+          </div>
+          <div className="steps">
+            <div className="step">
+              <div className="step-num">1</div>
+              <div className="step-text">Active le <b>mode développeur</b> dans ChatGPT → Settings → Beta features</div>
+            </div>
+            <div className="step">
+              <div className="step-num">2</div>
+              <div className="step-text">Va dans <b>Settings → Connectors → Add connector</b> et colle l&apos;URL ci-dessus</div>
+            </div>
+            <div className="step">
+              <div className="step-num">3</div>
+              <div className="step-text">Dans une nouvelle conversation, tape <b>&quot;Assurance auto&quot;</b> et c&apos;est parti 🚗</div>
+            </div>
+          </div>
+        </div>
+
+        <a className="cta" href="https://leocare.eu" target="_blank" rel="noopener noreferrer">Découvrir Leocare</a>
+        <p className="footer">Une estimation en quelques secondes, un devis précis sur <a href="https://leocare.eu" target="_blank" rel="noopener noreferrer">leocare.eu</a></p>
+      </body>
+    </html>
   );
 }
