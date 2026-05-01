@@ -1,7 +1,8 @@
 import { createMcpHandler } from "mcp-handler";
 import { z } from "zod";
 import { simulateTarif } from "@/lib/coherent";
-import { ACCROCHE, EXCLUDED_TEMPLATE, FORMULES, INELIGIBLE_TEMPLATE, OUTPUT_TEMPLATE, QUESTIONS } from "@/lib/prompts";
+import { lookupVehicleByPlate, parseRegistrationDate } from "@/lib/vehicles";
+import { ACCROCHE, EXCLUDED_TEMPLATE, FORMULES, INELIGIBLE_TEMPLATE, OUTPUT_TEMPLATE, QUESTIONS, VEHICLE_NOT_FOUND_TEMPLATE } from "@/lib/prompts";
 
 const WIDGET_URI = "ui://leocare/quote.html";
 
@@ -219,24 +220,81 @@ const handler = createMcpHandler(async (server) => {
   );
 
   server.registerTool(
+    "lookupVehicle",
+    {
+      title: "Rechercher un véhicule par plaque",
+      description:
+        `Recherche les informations d'un véhicule à partir de sa plaque d'immatriculation.
+
+APPELER CE TOOL EN PREMIER, avant toute autre question de profil.
+
+FLOW :
+1. L'utilisateur donne sa plaque → appeler immédiatement ce tool
+2. Si found=false → afficher exactement : "${VEHICLE_NOT_FOUND_TEMPLATE}"
+3. Si 1 véhicule → afficher "${QUESTIONS.confirmVehicle("[summary]")}" et attendre confirmation
+4. Si plusieurs véhicules → afficher la liste et demander lequel, puis confirmer
+5. Une fois confirmé → poser les questions dans cet ordre, UNE PAR UNE :
+   - "${QUESTIONS.naissance}"
+   - "${QUESTIONS.permis}"
+   - "${QUESTIONS.acquisition}"
+   - "${QUESTIONS.formule}"
+6. Appeler simulateCarInsurance avec toutes les données
+
+NE PAS demander la date de mise en circulation — elle est récupérée automatiquement via la plaque.`,
+      inputSchema: {
+        registration_number: z.string().describe("Plaque d'immatriculation du véhicule (ex: FA-110-LG ou FA110LG)"),
+      } as any,
+    },
+    async ({ registration_number }: { registration_number: string }) => {
+      const result = await lookupVehicleByPlate(registration_number);
+
+      if (!result.found || !result.vehicles) {
+        return {
+          content: [{ type: "text" as const, text: "VEHICLE_NOT_FOUND" }],
+        };
+      }
+
+      const vehicles = result.vehicles.map((v, i) => ({
+        index: i + 1,
+        summary: v.summary,
+        date_mec: parseRegistrationDate(v.registrationDate),
+        marque: v.make.label,
+        classe_sra: v.sraClass,
+        groupe_sra: parseInt(v.sraGroup, 10),
+      }));
+
+      return {
+        content: [{
+          type: "text" as const,
+          text: JSON.stringify({ vehicles }),
+        }],
+      };
+    }
+  );
+
+  server.registerTool(
     "simulateCarInsurance",
     {
       title: "Simuler un tarif assurance auto Leocare",
       description:
         `Calcule une estimation de tarif d'assurance auto Leocare.
 
-APPELER UNIQUEMENT quand les 4 paramètres sont collectés, validés et convertis — jamais avant.
+APPELER UNIQUEMENT après que lookupVehicle a été appelé et confirmé, ET que les 4 questions de profil ont été posées.
 
 COLLECTE DES DONNÉES — règles absolues :
-- Poser les questions UNE PAR UNE dans cet ordre exact, même si l'utilisateur donne tout d'un coup
+- Poser les questions UNE PAR UNE dans cet ordre exact
 - Ne jamais poser deux questions dans le même message
 - Tutoyer l'utilisateur, ton décontracté
 - N'utiliser JAMAIS de bloc de code ni de format monospace dans les messages
-- Étape 1 : Message d'accroche + première question dans le même message :
-  "${ACCROCHE}"
-- Étape 2 : "${QUESTIONS.permis}"
-- Étape 3 : "${QUESTIONS.mec}"
-- Étape 4 : "${QUESTIONS.formule}"
+- Les questions à poser dans l'ordre, APRÈS confirmation du véhicule :
+  1. "${QUESTIONS.naissance}"
+  2. "${QUESTIONS.permis}"
+  3. "${QUESTIONS.acquisition}"
+  4. "${QUESTIONS.formule}"
+
+PARAMÈTRES VÉHICULE :
+- date_mec, marque, classe_sra, groupe_sra sont récupérés automatiquement depuis lookupVehicle — ne pas les demander à l'utilisateur
+- date_acquisition = date d'achat saisie par l'utilisateur (différente de date_mec)
 
 CONVERSION DES DATES :
 - L'utilisateur saisit en JJ/MM/AAAA → convertir systématiquement en YYYY-MM-DD avant l'appel
@@ -247,6 +305,7 @@ VALIDATION AVANT APPEL :
 - date_naissance : dans le passé, âge entre 18 et 99 ans
 - date_permis : dans le passé, au moins 16 ans après date_naissance, pas antérieure à 1950
 - date_mec : dans le passé, entre 1980 et aujourd'hui
+- date_acquisition : dans le passé, >= date_mec
 - Si une date est invalide ou incohérente, demander poliment de la corriger avant d'appeler
 
 FORMAT DE RÉPONSE APRÈS L'APPEL — reproduire ce bloc EXACTEMENT, sans ajouter ni supprimer un seul mot :
@@ -259,14 +318,18 @@ CAS SPÉCIAUX :
   "${EXCLUDED_TEMPLATE}"
 - Si la réponse contient "PROFIL_NON_ELIGIBLE", reproduire exactement :
   "${INELIGIBLE_TEMPLATE}"`,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- mcp-handler n'exporte pas ses types ZodRawShape
       inputSchema: {
         date_naissance: z.string().describe("Date de naissance au format YYYY-MM-DD"),
         date_permis: z.string().describe("Date d'obtention du permis au format YYYY-MM-DD"),
-        date_mec: z.string().describe("Date de première immatriculation au format YYYY-MM-DD"),
+        date_mec: z.string().describe("Date de 1ère mise en circulation au format YYYY-MM-DD — récupérée via lookupVehicle"),
+        date_acquisition: z.string().describe("Date d'acquisition (achat) du véhicule par l'utilisateur au format YYYY-MM-DD"),
         numero_formule: z.enum(["F1", "F2", "F3", "F4"]).describe(
           "Formule choisie par l'utilisateur — valeurs possibles :\n- F1 — Tiers : couverture responsabilité civile uniquement\n- F2 — Tiers+ Bris De Glace : Tiers + bris de glace\n- F3 — Tiers+ Confort : Tiers + bris de glace + vol & incendie avec garanties étendues\n- F4 — Tous risques : couverture maximale"
         ),
+        marque: z.string().optional().describe("Marque du véhicule — récupérée via lookupVehicle"),
+        classe_sra: z.string().optional().describe("Classe SRA du véhicule — récupérée via lookupVehicle"),
+        groupe_sra: z.number().optional().describe("Groupe SRA du véhicule — récupéré via lookupVehicle"),
       // eslint-disable-next-line @typescript-eslint/no-explicit-any -- mcp-handler n'exporte pas ses types ZodRawShape
       } as any,
       outputSchema: z.object({
@@ -288,11 +351,15 @@ CAS SPÉCIAUX :
         "openai/resultCanProduceWidget": true,
       },
     },
-    async ({ date_naissance, date_permis, date_mec, numero_formule }: {
+    async ({ date_naissance, date_permis, date_mec, date_acquisition, numero_formule, marque, classe_sra, groupe_sra }: {
       date_naissance: string;
       date_permis: string;
       date_mec: string;
+      date_acquisition: string;
       numero_formule: string;
+      marque?: string;
+      classe_sra?: string;
+      groupe_sra?: number;
     }) => {
       try {
         validateDates(date_naissance, date_permis, date_mec);
@@ -303,7 +370,7 @@ CAS SPÉCIAUX :
         };
       }
 
-      const result = await simulateTarif({ date_naissance, date_permis, date_mec, numero_formule });
+      const result = await simulateTarif({ date_naissance, date_permis, date_mec, date_acquisition, numero_formule, marque, classe_sra, groupe_sra });
 
       if (!result.eligible) {
         if (result.reason === "exclusion") {
@@ -337,7 +404,7 @@ CAS SPÉCIAUX :
   );
 }, {
   instructions: `Tu es un assistant de simulation tarifaire pour **Leocare**, néo-assurance auto 100 % digitale.
-Ton rôle est d'aider l'utilisateur à obtenir une estimation de prix pour son assurance auto, en posant 4 questions simples, une par une.
+Ton rôle est d'aider l'utilisateur à obtenir une estimation de prix pour son assurance auto.
 
 COMPORTEMENT GÉNÉRAL :
 - Ton décontracté, moderne et bienveillant — tu tutoies l'utilisateur
@@ -351,6 +418,8 @@ COMPORTEMENT GÉNÉRAL :
   "${INELIGIBLE_TEMPLATE}"
 - En cas de profil exclu (réponse contenant "PROFIL_EXCLU"), réponds exactement ainsi :
   "${EXCLUDED_TEMPLATE}"
+- En cas de véhicule non trouvé (réponse contenant "VEHICLE_NOT_FOUND"), réponds exactement ainsi :
+  "${VEHICLE_NOT_FOUND_TEMPLATE}"
 
 POLITIQUE DE CONFIDENTIALITÉ :
 - Si l'utilisateur demande comment ses données sont utilisées, réponds : "Aucune donnée personnelle n'est conservée. Cette simulation est anonyme. Pour en savoir plus : https://leocare.eu/fr/politique-de-confidentialite/"
@@ -362,14 +431,17 @@ GESTION DES DATES :
 - En cas de doute sur l'année (ex: "né en 82"), préférer demander confirmation plutôt qu'interpréter seul
 
 FLOW DE SIMULATION :
-1. Commence TOUJOURS par ce message d'accroche exact, puis enchaîne immédiatement avec la première question dans le même message :
+1. Commence TOUJOURS par ce message d'accroche exact :
    "${ACCROCHE}"
-2. Demande la date du permis : "${QUESTIONS.permis}"
-3. Demande la date de mise en circulation : "${QUESTIONS.mec}"
-4. Présente les formules :
-   "Quelle formule t'intéresse ?
-   ${FORMULES}"
-5. Appelle immédiatement simulateCarInsurance avec les 4 paramètres
+2. L'utilisateur donne sa plaque → appeler immédiatement lookupVehicle
+3. Si 1 véhicule trouvé → afficher marque + modèle + version et demander confirmation
+   Si plusieurs → lister et demander lequel, puis confirmer
+4. Une fois le véhicule confirmé, poser dans l'ordre :
+   - "${QUESTIONS.naissance}"
+   - "${QUESTIONS.permis}"
+   - "${QUESTIONS.acquisition}"
+   - "${QUESTIONS.formule}"
+5. Appeler simulateCarInsurance avec toutes les données (date_mec et données véhicule depuis lookupVehicle)
 6. Après l'estimation, reproduis UNIQUEMENT le bloc défini dans la description du tool — rien d'autre.`,
 }, { basePath: "", maxDuration: 60 });
 
