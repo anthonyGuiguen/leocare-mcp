@@ -265,10 +265,21 @@ NE PAS demander la date de mise en circulation ni la date d'acquisition — elle
         groupe_sra: parseInt(v.sraGroup, 10),
       }));
 
+      if (vehicles.length === 1) {
+        const v = vehicles[0];
+        return {
+          content: [{
+            type: "text" as const,
+            text: `VEHICLE_FOUND_SINGLE\nsummary:${v.summary}\ndate_mec:${v.date_mec}\nmarque:${v.marque}\nclasse_sra:${v.classe_sra}\ngroupe_sra:${v.groupe_sra}\n\nAFFICHER EXACTEMENT : "J'ai trouvé : **${v.summary}**. C'est bien ton véhicule ?"`,
+          }],
+        };
+      }
+
+      const liste = vehicles.map((v, i) => `${i + 1}. ${v.summary}`).join("\n");
       return {
         content: [{
           type: "text" as const,
-          text: JSON.stringify({ vehicles }),
+          text: `VEHICLE_FOUND_MULTIPLE\n${JSON.stringify(vehicles)}\n\nAFFICHER EXACTEMENT :\n"J'ai trouvé plusieurs véhicules pour cette plaque :\n${liste}\nLequel est le tien ?"`,
         }],
       };
     }
