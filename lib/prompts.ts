@@ -18,7 +18,6 @@ export const QUESTIONS = {
   chooseVehicle: (summaries: string[]) => `J'ai trouvé plusieurs véhicules pour cette plaque :\n${summaries.map((s, i) => `${i + 1}. ${s}`).join("\n")}\nLequel est le tien ?`,
   naissance: `Quelle est ta date de naissance ? (ex : 15/03/1990)`,
   permis: `Et la date d'obtention de ton permis ? (ex : 20/06/2010)`,
-  acquisition: `Quelle est la date à laquelle tu as acheté ce véhicule ? (ex : 01/03/2022)`,
   formule: `Quelle formule t'intéresse ?\n${FORMULES}`,
 };
 

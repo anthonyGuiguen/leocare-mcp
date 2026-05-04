@@ -236,11 +236,10 @@ FLOW :
 5. Une fois confirmé → poser les questions dans cet ordre, UNE PAR UNE :
    - "${QUESTIONS.naissance}"
    - "${QUESTIONS.permis}"
-   - "${QUESTIONS.acquisition}"
    - "${QUESTIONS.formule}"
 6. Appeler simulateCarInsurance avec toutes les données
 
-NE PAS demander la date de mise en circulation — elle est récupérée automatiquement via la plaque.`,
+NE PAS demander la date de mise en circulation ni la date d'acquisition — elles sont récupérées automatiquement.`,
       inputSchema: {
         registration_number: z.string().describe("Plaque d'immatriculation du véhicule (ex: FA-110-LG ou FA110LG)"),
       } as any,
@@ -289,13 +288,10 @@ COLLECTE DES DONNÉES — règles absolues :
 - Les questions à poser dans l'ordre, APRÈS confirmation du véhicule :
   1. "${QUESTIONS.naissance}"
   2. "${QUESTIONS.permis}"
-  3. "${QUESTIONS.acquisition}"
-  4. "${QUESTIONS.formule}"
+  3. "${QUESTIONS.formule}"
 
 PARAMÈTRES VÉHICULE :
-- date_mec, marque, classe_sra, groupe_sra sont récupérés automatiquement depuis lookupVehicle — ne pas les demander à l'utilisateur
-- date_acquisition = date d'achat saisie par l'utilisateur (différente de date_mec)
-
+- date_mec et date_acquisition sont récupérées automatiquement (date_acquisition = date du jour) — ne pas les demander à l'utilisateur
 CONVERSION DES DATES :
 - L'utilisateur saisit en JJ/MM/AAAA → convertir systématiquement en YYYY-MM-DD avant l'appel
 - Exemple : "15/03/1990" → "1990-03-15"
@@ -323,7 +319,6 @@ CAS SPÉCIAUX :
         date_naissance: z.string().describe("Date de naissance au format YYYY-MM-DD"),
         date_permis: z.string().describe("Date d'obtention du permis au format YYYY-MM-DD"),
         date_mec: z.string().describe("Date de 1ère mise en circulation au format YYYY-MM-DD — récupérée via lookupVehicle"),
-        date_acquisition: z.string().describe("Date d'acquisition (achat) du véhicule par l'utilisateur au format YYYY-MM-DD"),
         numero_formule: z.enum(["F1", "F2", "F3", "F4"]).describe(
           "Formule choisie par l'utilisateur — valeurs possibles :\n- F1 — Tiers : couverture responsabilité civile uniquement\n- F2 — Tiers+ Bris De Glace : Tiers + bris de glace\n- F3 — Tiers+ Confort : Tiers + bris de glace + vol & incendie avec garanties étendues\n- F4 — Tous risques : couverture maximale"
         ),
@@ -351,11 +346,10 @@ CAS SPÉCIAUX :
         "openai/resultCanProduceWidget": true,
       },
     },
-    async ({ date_naissance, date_permis, date_mec, date_acquisition, numero_formule, marque, classe_sra, groupe_sra }: {
+    async ({ date_naissance, date_permis, date_mec, numero_formule, marque, classe_sra, groupe_sra }: {
       date_naissance: string;
       date_permis: string;
       date_mec: string;
-      date_acquisition: string;
       numero_formule: string;
       marque?: string;
       classe_sra?: string;
@@ -370,7 +364,7 @@ CAS SPÉCIAUX :
         };
       }
 
-      const result = await simulateTarif({ date_naissance, date_permis, date_mec, date_acquisition, numero_formule, marque, classe_sra, groupe_sra });
+      const result = await simulateTarif({ date_naissance, date_permis, date_mec, numero_formule, marque, classe_sra, groupe_sra });
 
       if (!result.eligible) {
         if (result.reason === "exclusion") {
@@ -439,7 +433,6 @@ FLOW DE SIMULATION :
 4. Une fois le véhicule confirmé, poser dans l'ordre :
    - "${QUESTIONS.naissance}"
    - "${QUESTIONS.permis}"
-   - "${QUESTIONS.acquisition}"
    - "${QUESTIONS.formule}"
 5. Appeler simulateCarInsurance avec toutes les données (date_mec et données véhicule depuis lookupVehicle)
 6. Après l'estimation, reproduis UNIQUEMENT le bloc défini dans la description du tool — rien d'autre.`,

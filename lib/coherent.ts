@@ -29,14 +29,13 @@ export async function simulateTarif(params: {
   date_naissance: string;
   date_permis: string;
   date_mec: string;
-  date_acquisition: string;
   numero_formule: string;
   // Données véhicule pré-remplies depuis l'API plaque
   marque?: string;
   classe_sra?: string;
   groupe_sra?: number;
 }): Promise<TarifResult> {
-  const { date_naissance, date_permis, date_mec, date_acquisition, numero_formule, marque, classe_sra, groupe_sra } = params;
+  const { date_naissance, date_permis, date_mec, numero_formule, marque, classe_sra, groupe_sra } = params;
 
   if (!(VALID_FORMULES as readonly string[]).includes(numero_formule)) {
     throw new Error(`numero_formule invalide : "${numero_formule}". Valeurs autorisées : ${VALID_FORMULES.join(", ")}`);
@@ -58,7 +57,7 @@ export async function simulateTarif(params: {
         contenu_equipement: "Non",
         CRM_cp: 0.5,
         csp: "Salarié",
-        date_acquisition: date_acquisition,
+        date_acquisition: today,
         date_effet: today,
         date_mec: date_mec,
         date_naissance_cp: date_naissance,
