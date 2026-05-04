@@ -291,7 +291,8 @@ COLLECTE DES DONNÉES — règles absolues :
   3. "${QUESTIONS.formule}"
 
 PARAMÈTRES VÉHICULE :
-- date_mec et date_acquisition sont récupérées automatiquement (date_acquisition = date du jour) — ne pas les demander à l'utilisateur
+- date_mec est récupérée via lookupVehicle (registrationDate) — ne pas la demander à l'utilisateur
+- date_acquisition = date du jour automatiquement — ne pas la demander à l'utilisateur
 CONVERSION DES DATES :
 - L'utilisateur saisit en JJ/MM/AAAA → convertir systématiquement en YYYY-MM-DD avant l'appel
 - Exemple : "15/03/1990" → "1990-03-15"
