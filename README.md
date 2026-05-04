@@ -1,5 +1,9 @@
 # leocare-mcp
 
+[![Vercel](https://deploy-badge.vercel.app/vercel/leocare-mcp)](https://leocare-mcp.vercel.app)
+![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)
+![License](https://img.shields.io/badge/license-Proprietary-red)
+
 Serveur MCP (Model Context Protocol) pour la simulation tarifaire assurance auto **Leocare**. Connecte ChatGPT et autres LLM compatibles MCP au moteur de tarification Leocare.
 
 ## Quick Start
