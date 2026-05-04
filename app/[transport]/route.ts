@@ -90,10 +90,6 @@ function buildWidgetHtml(): string {
     <div class="recap-title">Ton profil</div>
     <div class="recap-subcard">
       <div class="recap-row">
-        <div class="recap-icon">${ICON_BIRTHDAY}</div>
-        <div><div class="recap-row-label">Date de naissance</div><div class="recap-row-value" id="r-naissance"></div></div>
-      </div>
-      <div class="recap-row">
         <div class="recap-icon">${ICON_CAR}</div>
         <div><div class="recap-row-label">Véhicule</div><div class="recap-row-value" id="r-vehicle"></div></div>
       </div>
