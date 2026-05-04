@@ -1,30 +1,43 @@
 # leocare-mcp
 
-Serveur MCP (Model Context Protocol) pour la simulation tarifaire assurance auto **Leocare**. Déployé sur Vercel, connecté à ChatGPT et autres LLM compatibles MCP.
+Serveur MCP (Model Context Protocol) pour la simulation tarifaire assurance auto **Leocare**. Connecte ChatGPT et autres LLM compatibles MCP au moteur de tarification Leocare.
 
-## Ce que ça fait
+## Quick Start
 
-1. L'utilisateur donne sa **plaque d'immatriculation** → le serveur récupère automatiquement les infos du véhicule (marque, modèle, date de mise en circulation)
-2. L'utilisateur confirme le véhicule puis répond à 4 questions : date de naissance, date de permis, date d'acquisition, formule souhaitée
-3. Le serveur calcule une estimation de prime mensuelle et annuelle
-4. Le résultat s'affiche dans un widget visuel directement dans le chat
+### 1. Ajouter le connecteur dans ChatGPT
 
-## Stack
+Dans ChatGPT, ajoute un nouveau connecteur MCP avec l'URL :
 
-- **Next.js 15** — App Router, déployé sur Vercel
-- **mcp-handler** — abstraction MCP Streamable HTTP
-- **Zod** — validation des inputs
+```
+https://leocare-mcp.vercel.app/mcp
+```
 
-## Tools MCP exposés
+### 2. Utiliser
+
+Lance une conversation et dis simplement :
+
+> "Je veux une simulation d'assurance auto Leocare"
+
+Le LLM va :
+1. Te demander ta **plaque d'immatriculation**
+2. Identifier ton véhicule automatiquement et te demander confirmation
+3. Te poser 4 questions (date de naissance, permis, acquisition, formule)
+4. Afficher ton estimation dans un widget visuel
+
+## Compatibilité
+
+| LLM | Support |
+|-----|---------|
+| ChatGPT (chatgpt.com) | ✅ Supporté |
+| Claude (claude.ai) | ✅ Supporté |
+| Copilot | ✅ Supporté |
+
+## Tools
 
 | Tool | Description |
-|---|---|
-| `lookupVehicle` | Recherche un véhicule par plaque |
-| `simulateCarInsurance` | Calcule une estimation de tarif |
-
-## Variables d'environnement
-
-Voir `.env.example` pour la liste complète.
+|------|-------------|
+| `lookupVehicle` | Recherche un véhicule par plaque d'immatriculation |
+| `simulateCarInsurance` | Calcule une estimation de tarif assurance auto |
 
 ## Lancer en local
 
@@ -35,9 +48,12 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Le serveur MCP est accessible sur `http://localhost:3000/mcp`.
+Serveur disponible sur `http://localhost:3000/mcp`.
+
+## Variables d'environnement
+
+Voir `.env.example` pour la liste complète des variables à configurer.
 
 ## Déploiement
 
 Déployé automatiquement sur Vercel à chaque push sur `main`.
-
