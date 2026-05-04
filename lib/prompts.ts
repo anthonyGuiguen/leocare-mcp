@@ -18,7 +18,9 @@ export const QUESTIONS = {
   chooseVehicle: (summaries: string[]) => `J'ai trouvé plusieurs véhicules pour cette plaque :\n${summaries.map((s, i) => `${i + 1}. ${s}`).join("\n")}\nLequel est le tien ?`,
   naissance: `Quelle est ta date de naissance ? (ex : 15/03/1990)`,
   permis: `Et la date d'obtention de ton permis ? (ex : 20/06/2010)`,
-  formule: `Quelle formule t'intéresse ?\n${FORMULES}`,
+  formule: `Tu veux choisir toi-même ta formule d'assurance entre :
+${FORMULES}
+ou que je te recommande la plus adaptée à ton profil ?`,
 };
 
 export const OUTPUT_TEMPLATE = `"Pour ton profil, voici l'estimation Leocare en formule [nom formule] :

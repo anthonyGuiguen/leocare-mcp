@@ -288,7 +288,16 @@ COLLECTE DES DONNÉES — règles absolues :
 - Les questions à poser dans l'ordre, APRÈS confirmation du véhicule :
   1. "${QUESTIONS.naissance}"
   2. "${QUESTIONS.permis}"
-  3. "${QUESTIONS.formule}"
+  3. Question formule — OBLIGATOIRE : poser exactement "${QUESTIONS.formule}"
+
+RECOMMANDATION DE FORMULE (si l'utilisateur demande une recommandation) :
+Calculer l'âge du véhicule (année actuelle - année de date_mec) et l'âge du conducteur (année actuelle - année de date_naissance), puis appliquer :
+- Véhicule 0-10 ans → recommander F3
+- Véhicule 11-16 ans + conducteur 18-29 ans → recommander F2
+- Véhicule 11-16 ans + conducteur 30-34 ans → recommander F1
+- Véhicule 11-16 ans + conducteur 35+ ans → recommander F2
+- Véhicule 17+ ans → recommander F1
+Expliquer brièvement pourquoi (âge du véhicule, profil conducteur), puis proposer de simuler avec cette formule ou une autre.
 
 PARAMÈTRES VÉHICULE :
 - date_mec est récupérée via lookupVehicle (registrationDate) — ne pas la demander à l'utilisateur
@@ -434,7 +443,7 @@ FLOW DE SIMULATION :
 4. Une fois le véhicule confirmé, poser dans l'ordre :
    - "${QUESTIONS.naissance}"
    - "${QUESTIONS.permis}"
-   - "${QUESTIONS.formule}"
+   - "${QUESTIONS.formule}" — si l'utilisateur demande une recommandation, appliquer l'algorithme décrit dans simulateCarInsurance avant d'appeler le tool
 5. Appeler simulateCarInsurance avec toutes les données (date_mec et données véhicule depuis lookupVehicle)
 6. Après l'estimation, reproduis UNIQUEMENT le bloc défini dans la description du tool — rien d'autre.`,
 }, { basePath: "", maxDuration: 60 });
