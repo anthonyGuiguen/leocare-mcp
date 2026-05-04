@@ -119,7 +119,6 @@ function show(d,input){
   if(shown)return;
   if(!d||d.prix_annuel===undefined)return;
   shown=true;
-  document.getElementById('tagline-formule').textContent=d.formule||'';
   document.getElementById('h-formule').textContent=d.formule||'';
   document.getElementById('monthly').textContent=d.prix_mensuel;
   document.getElementById('annual').textContent=d.prix_annuel;
