@@ -226,6 +226,9 @@ const handler = createMcpHandler(async (server) => {
       description:
         `Recherche les informations d'un véhicule à partir de sa plaque d'immatriculation.
 
+AVANT d'appeler ce tool, reproduire ce message MOT POUR MOT si ce n'est pas encore fait :
+"${ACCROCHE}"
+
 APPELER CE TOOL EN PREMIER, avant toute autre question de profil.
 
 FLOW :
@@ -435,7 +438,7 @@ GESTION DES DATES :
 - En cas de doute sur l'année (ex: "né en 82"), préférer demander confirmation plutôt qu'interpréter seul
 
 FLOW DE SIMULATION :
-1. Commence TOUJOURS par ce message d'accroche exact :
+1. Commence TOUJOURS par reproduire ce message MOT POUR MOT, sans rien changer ni reformuler :
    "${ACCROCHE}"
 2. L'utilisateur donne sa plaque → appeler immédiatement lookupVehicle
 3. Si 1 véhicule trouvé → afficher marque + modèle + version et demander confirmation
