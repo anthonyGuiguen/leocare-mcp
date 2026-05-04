@@ -86,35 +86,35 @@ function getVehicleAge(registrationDate: string): number {
  * 17+ ans       | tous           | F1
  */
 export function recommendFormule(registrationDate: string, driverAge: number): {
-  formule: "F1" | "F2" | "F3";
+  formule: "F1" | "F2" | "F3" | "F4";
   reason: string;
 } {
   const vehicleAge = getVehicleAge(registrationDate);
 
   if (vehicleAge <= 10) {
     return {
-      formule: "F3",
-      reason: `Ton véhicule a ${vehicleAge} an${vehicleAge > 1 ? "s" : ""} — un véhicule récent mérite une bonne protection. Je te recommande la formule **F3 — Tiers+ Confort**.`,
+      formule: "F4",
+      reason: `Ton véhicule a ${vehicleAge} an${vehicleAge > 1 ? "s" : ""} — un véhicule récent mérite une protection maximale. Je te recommande la formule **F4 — Tous risques**.`,
     };
   }
 
   if (vehicleAge < 17) {
     if (driverAge >= 18 && driverAge <= 29) {
       return {
-        formule: "F2",
-        reason: `Ton véhicule a ${vehicleAge} ans et tu es un jeune conducteur — je te recommande la formule **F2 — Tiers+ Bris De Glace**, un bon équilibre prix/protection.`,
+        formule: "F3",
+        reason: `Ton véhicule a ${vehicleAge} ans et tu es un jeune conducteur — je te recommande la formule **F3 — Tiers+ Confort**, un bon équilibre prix/protection.`,
       };
     }
     if (driverAge >= 30 && driverAge <= 34) {
       return {
-        formule: "F1",
-        reason: `Ton véhicule a ${vehicleAge} ans — je te recommande la formule **F1 — Tiers**, suffisante pour ce profil.`,
+        formule: "F2",
+        reason: `Ton véhicule a ${vehicleAge} ans — je te recommande la formule **F2 — Tiers+ Bris De Glace**, adaptée à ce profil.`,
       };
     }
     // 35+
     return {
-      formule: "F2",
-      reason: `Ton véhicule a ${vehicleAge} ans — je te recommande la formule **F2 — Tiers+ Bris De Glace**, un bon équilibre pour ce profil.`,
+      formule: "F3",
+      reason: `Ton véhicule a ${vehicleAge} ans — je te recommande la formule **F3 — Tiers+ Confort**, un bon équilibre pour ce profil.`,
     };
   }
 

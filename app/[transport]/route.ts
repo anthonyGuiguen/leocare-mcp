@@ -306,10 +306,10 @@ COLLECTE DES DONNÉES — règles absolues :
 
 RECOMMANDATION DE FORMULE (si l'utilisateur demande une recommandation) :
 Calculer l'âge du véhicule (année actuelle - année de date_mec) et l'âge du conducteur (année actuelle - année de date_naissance), puis appliquer :
-- Véhicule 0-10 ans → recommander F3
-- Véhicule 11-16 ans + conducteur 18-29 ans → recommander F2
-- Véhicule 11-16 ans + conducteur 30-34 ans → recommander F1
-- Véhicule 11-16 ans + conducteur 35+ ans → recommander F2
+- Véhicule 0-10 ans → recommander F4
+- Véhicule 11-16 ans + conducteur 18-29 ans → recommander F3
+- Véhicule 11-16 ans + conducteur 30-34 ans → recommander F2
+- Véhicule 11-16 ans + conducteur 35+ ans → recommander F3
 - Véhicule 17+ ans → recommander F1
 Expliquer brièvement pourquoi (âge du véhicule, profil conducteur), puis proposer de simuler avec cette formule ou une autre.
 
